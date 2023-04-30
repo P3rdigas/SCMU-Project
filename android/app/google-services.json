@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "126475790122",
+    "project_id": "projeto-scmu-5230b",
+    "storage_bucket": "projeto-scmu-5230b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126475790122:android:4857f65c7f9b94403ba053",
+        "android_client_info": {
+          "package_name": "scmu.officerats.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126475790122-tdm5lnp5346lec888k2bmvpam4igafeb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-L0DQBigKGFKhUG93WTYe5-2zFqXw8XE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126475790122-tdm5lnp5346lec888k2bmvpam4igafeb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
