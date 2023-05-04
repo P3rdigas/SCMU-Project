@@ -52,6 +52,7 @@ class _SignInState extends State<SignIn> {
                           return "Please enter your email address";
                         } else if(!EmailValidator.validate(value)){
                           return "Please enter a valid email.";
+
                         }
 
                         return null;

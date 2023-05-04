@@ -19,6 +19,7 @@ class _SignUpState extends State<SignUp> {
   final _signUpScreenFormKey = GlobalKey<FormState>();
 
   TextEditingController passwordTextController = TextEditingController();
+  TextEditingController confirmPasswordTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController usernameTextController = TextEditingController();
 
@@ -94,7 +95,7 @@ class _SignUpState extends State<SignUp> {
                         const SizedBox(
                           height: 20,
                         ),
-                        reusableTextField("Confirm Password", Icons.lock_outline, true, null, (value) {
+                        reusableTextField("Confirm Password", Icons.lock_outline, true, confirmPasswordTextController, (value) {
                           if(value == null || value.isEmpty) {
                             return "Please re-enter your password";
                           } else if(value != passwordTextController.text) {

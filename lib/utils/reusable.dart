@@ -11,7 +11,7 @@ Image logoWidget(String imageName, color) {
 }
 
 TextFormField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController? controller, String? Function(String?)? validatorExec) {
+    TextEditingController controller, String? Function(String?)? validatorExec) {
   return TextFormField(
     controller: controller,
     obscureText: isPasswordType,
@@ -23,6 +23,12 @@ TextFormField reusableTextField(String text, IconData icon, bool isPasswordType,
       prefixIcon: Icon(
         icon,
         color: Colors.white70,
+      ),
+      suffixIcon: IconButton(
+        onPressed: () {
+            controller.clear();
+        },
+        icon: const Icon(Icons.clear),
       ),
       labelText: text,
       labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
