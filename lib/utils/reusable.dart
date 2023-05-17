@@ -17,27 +17,28 @@ TextFormField reusableTextField(String text, IconData icon, bool isPasswordType,
     obscureText: isPasswordType,
     enableSuggestions: !isPasswordType,
     autocorrect: !isPasswordType,
-    cursorColor: Colors.white,
-    style: TextStyle(color: Colors.white.withOpacity(0.9)),
+    cursorColor: Colors.grey,
+    style: TextStyle(color: Colors.grey.withOpacity(0.5)),
     decoration: InputDecoration(
       prefixIcon: Icon(
         icon,
-        color: Colors.white70,
+        color: Colors.grey.withOpacity(0.5),
       ),
       suffixIcon: IconButton(
         onPressed: () {
             controller.clear();
         },
+        color: Colors.grey.withOpacity(0.5),
         icon: const Icon(Icons.clear),
       ),
       labelText: text,
-      labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+      labelStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      fillColor: Colors.white.withOpacity(0.3),
+      fillColor: Colors.grey[150],
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(width: 1, color: Colors.red, style: BorderStyle.solid)),
     ),
     keyboardType: isPasswordType
         ? TextInputType.visiblePassword
@@ -62,14 +63,14 @@ Container firebaseUIButton(BuildContext context, String title, Function onTap) {
       child: Text(
         title,
         style: const TextStyle(
-            color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
+            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
       ),
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.pressed)) {
-              return Colors.black26;
+              return Colors.white;
             }
-            return Colors.white;
+            return const Color(0xFF6CAD7C);
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),

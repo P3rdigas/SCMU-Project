@@ -1,4 +1,6 @@
+import 'package:app/pages/home.dart';
 import 'package:app/pages/signin.dart';
+import 'package:app/pages/signin3.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const SignIn(),
+      home: const SignIn3(),
     );
   }
 }
