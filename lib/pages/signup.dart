@@ -110,9 +110,8 @@ class _SignUpState extends State<SignUp> {
                     const SizedBox(
                       height: 20,
                     ),
-                    reusableTextField(
-                        "Confirm Password", Icons.lock_outline, true, null,
-                        (value) {
+                    reusableTextField("Confirm Password", Icons.lock_outline,
+                        true, passwordTextController, (value) {
                       if (value == null || value.isEmpty) {
                         return "Please re-enter your password";
                       } else if (value != passwordTextController.text) {
