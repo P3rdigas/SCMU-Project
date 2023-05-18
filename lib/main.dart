@@ -1,3 +1,4 @@
+import 'package:app/pages/front.dart';
 import 'package:app/pages/home.dart';
 import 'package:app/pages/signin.dart';
 import 'package:app/pages/signin3.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const SignIn3(),
+      home: const Front(),
     );
   }
 }

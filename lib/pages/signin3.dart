@@ -1,3 +1,4 @@
+import 'package:app/pages/front.dart';
 import 'package:app/pages/signup.dart';
 import 'package:app/pages/signup3.dart';
 import 'package:app/utils/colors.dart';
@@ -40,7 +41,13 @@ class _SignInState extends State<SignIn3> {
                       child: Row(
 
                         children: [
-                          Icon(Icons.arrow_back_ios_new),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => Front()));
+                            },
+                            child: Icon(Icons.arrow_back_ios_new),
+                          ),
                           Spacer(),
                           Text(
                             "Log In",

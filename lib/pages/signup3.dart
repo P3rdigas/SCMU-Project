@@ -1,3 +1,4 @@
+import 'package:app/pages/front.dart';
 import 'package:app/pages/home.dart';
 import 'package:app/pages/signin3.dart';
 import 'package:email_validator/email_validator.dart';
@@ -43,19 +44,26 @@ class _SignUpState extends State<SignUp3> {
                       child: Row(
 
                         children: [
-                          Icon(Icons.arrow_back_ios_new),
-                          Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => Front()));
+                            },
+                            child: Icon(Icons.arrow_back_ios_new),
+                            ),
+                          Spacer(flex:2),
                           Text(
                             "Sign Up",
                             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left,
                           ),
-                          Spacer(),
+                          Spacer(flex:3),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) => SignIn3()));
                             },
-                            child: const Text("Register", style: TextStyle(color: const Color(0xFF6CAD7C), fontSize: 15),
+                            child: const Text("", style: TextStyle(color: const Color(0xFF6CAD7C), fontSize: 15),
                             ),
                           )
                         ],
