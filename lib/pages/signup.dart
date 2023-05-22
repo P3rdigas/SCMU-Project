@@ -139,6 +139,10 @@ class _SignUpState extends State<SignUp> {
                         if (value == null || value.isEmpty) {
                           return "Please enter your password";
                         }
+
+                        if (value != passwordTextController.text) {
+                          return "Password mismatch";
+                        }
                         return null;
                       }),
                       const SizedBox(
