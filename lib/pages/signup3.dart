@@ -1,4 +1,5 @@
 import 'package:app/pages/front.dart';
+import 'package:app/pages/signUnQuestion.dart';
 import 'package:app/pages/signin3.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -133,6 +134,10 @@ class _SignUpState extends State<SignUp3> {
                                   passwordTextController.text.trim(),
                                   emailTextController.text.trim());
                               successMessage(context, "Signin complete");
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignUpQuestion()));
                             });
                           } on FirebaseAuthException catch (e) {
                             errorMessage(context, e.message.toString());

@@ -1,4 +1,6 @@
 import 'package:app/pages/front.dart';
+import 'package:app/pages/signUnQuestion.dart';
+import 'package:app/pages/welcome.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const Front(),
+      home: const SignUpQuestion(),
     );
   }
 }

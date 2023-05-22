@@ -64,6 +64,7 @@ class SignUpQuestion extends StatelessWidget {
                 child: Text(
                     "Pretend to use the application as an office owner?",
                     //Font Roboto Semi Bold
+                    textAlign: TextAlign.center,
                     style:
                         TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
               ),
