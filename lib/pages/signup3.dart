@@ -1,5 +1,6 @@
 import 'package:app/pages/front.dart';
 import 'package:app/pages/signin3.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _SignUpState extends State<SignUp3> {
   TextEditingController passwordTextController = TextEditingController();
   TextEditingController confirmPasswordTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
-  TextEditingController usernameTextController = TextEditingController();
+  TextEditingController nameTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,30 +48,29 @@ class _SignUpState extends State<SignUp3> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Front()));
+                                        builder: (context) => const Front()));
                               },
-                              child: Icon(Icons.arrow_back_ios_new),
+                              child: const Icon(Icons.arrow_back_ios_new),
                             ),
-                            Spacer(flex: 2),
-                            Text(
+                            const Spacer(flex: 2),
+                            const Text(
                               "Sign Up",
                               style: TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.left,
                             ),
-                            Spacer(flex: 3),
+                            const Spacer(flex: 3),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SignIn3()));
+                                        builder: (context) => const SignIn3()));
                               },
                               child: const Text(
                                 "",
                                 style: TextStyle(
-                                    color: const Color(0xFF6CAD7C),
-                                    fontSize: 15),
+                                    color: Color(0xFF6CAD7C), fontSize: 15),
                               ),
                             )
                           ],
@@ -88,10 +88,11 @@ class _SignUpState extends State<SignUp3> {
                       const SizedBox(
                         height: 20,
                       ),
-                      reusableTextField("Username", Icons.person, false,
-                          usernameTextController, (value) {
+                      reusableTextField(
+                          "Name", Icons.person, false, nameTextController,
+                          (value) {
                         if (value == null || value.isEmpty) {
-                          return "Please enter your username";
+                          return "Please enter your name";
                         }
                         return null;
                       }),
@@ -109,7 +110,7 @@ class _SignUpState extends State<SignUp3> {
                         height: 20,
                       ),
                       reusableTextField("Confirm Password", Icons.lock_outline,
-                          true, passwordTextController, (value) {
+                          true, confirmPasswordTextController, (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter your password";
                         }
@@ -118,14 +119,19 @@ class _SignUpState extends State<SignUp3> {
                       const SizedBox(
                         height: 20,
                       ),
-                      firebaseUIButton(context, "Log In", () async {
+                      firebaseUIButton(context, "Sign Up", () async {
                         if (_signUpScreenFormKey.currentState!.validate()) {
                           try {
                             await FirebaseAuth.instance
                                 .createUserWithEmailAndPassword(
-                                    email: emailTextController.text,
-                                    password: passwordTextController.text)
+                                    email: emailTextController.text.trim(),
+                                    password:
+                                        passwordTextController.text.trim())
                                 .then((value) {
+                              addUserDetails(
+                                  value.user?.uid,
+                                  passwordTextController.text.trim(),
+                                  emailTextController.text.trim());
                               successMessage(context, "Signin complete");
                             });
                           } on FirebaseAuthException catch (e) {
@@ -140,5 +146,19 @@ class _SignUpState extends State<SignUp3> {
             ),
           ),
         ));
+  }
+
+  Future addUserDetails(String? uID, String name, String email) async {
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(uID)
+        //TODO Trocar "PARAMETER" pelo parametro a receber na classe
+        .set({
+      "Name": name,
+      "Email": email,
+      "Kind": "PARAMETER",
+      "Temperature": -1,
+      "Lights": -1
+    });
   }
 }
