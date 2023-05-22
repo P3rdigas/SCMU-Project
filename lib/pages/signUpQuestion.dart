@@ -1,5 +1,4 @@
-import 'package:app/pages/signin3.dart';
-import 'package:app/pages/signup3.dart';
+import 'package:app/pages/signup.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/reusable.dart';
@@ -22,6 +21,7 @@ class SignUpQuestion extends StatelessWidget {
               Container(
                 height: 80,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -32,23 +32,21 @@ class SignUpQuestion extends StatelessWidget {
                       },
                       child: const Icon(Icons.arrow_back_ios_new),
                     ),
-                    const Spacer(flex: 2),
                     const Text(
                       "Sign Up",
                       style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
-                    const Spacer(flex: 3),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignIn3()));
+                                builder: (context) => const SignUpQuestion()));
                       },
                       child: const Text(
-                        "Login",
+                        "Sign In",
                         style:
                             TextStyle(color: Color(0xFF6CAD7C), fontSize: 15),
                       ),
@@ -59,7 +57,6 @@ class SignUpQuestion extends StatelessWidget {
               const SizedBox(
                 height: 40,
               ),
-              //TODO Parece nao estar bem
               const Center(
                 child: Text(
                     "Pretend to use the application as an office owner?",
@@ -75,15 +72,13 @@ class SignUpQuestion extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        //TODO Mandar parametro a dizer que é um Owner
-                        builder: (context) => const SignUp3()));
+                        builder: (context) => const SignUp(kind: "Owner")));
               }),
               firebaseUIButton(context, "No", () async {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        //TODO Mandar parametro a dizer que é um User
-                        builder: (context) => const SignUp3()));
+                        builder: (context) => const SignUp(kind: "User")));
               }),
             ],
           ),
