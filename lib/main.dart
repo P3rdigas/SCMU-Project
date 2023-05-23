@@ -1,5 +1,4 @@
-import 'package:app/pages/front.dart';
-import 'package:app/pages/ownersetup.dart';
+import 'package:app/pages/initialConfigsUser.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +29,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const OwnerSetUp(),
+      home: InitialConfigsUser(),
+      //home: const Front(),
     );
   }
 }
