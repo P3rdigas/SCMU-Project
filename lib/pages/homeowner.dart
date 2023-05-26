@@ -35,12 +35,12 @@ class _SignUpState extends State<HomeOwner> {
                       const SizedBox(
                         height: 40,
                       ),
-                      const Align(
+                      Align(
                         alignment: Alignment.topLeft,
-                        child: Text("Welcome, Username",
+                        child: Text("Welcome, ${user.name}",
                             //Font Roboto Semi Bold
                             textAlign: TextAlign.left,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 25, fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(
@@ -197,7 +197,6 @@ class _SignUpState extends State<HomeOwner> {
         onTap: () {
           setState(() {
             button = !button;
-            print(button);
           });
         },
         child: Container(

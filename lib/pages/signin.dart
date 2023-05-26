@@ -106,8 +106,6 @@ class _SignInState extends State<SignIn> {
                                     email: _emailTextController.text,
                                     password: _passwordTextController.text)
                                 .then((value) async {
-                              successMessage(context, "Signin complete");
-
                               await FirebaseFirestore.instance
                                   .collection("Users")
                                   .doc(_emailTextController.text)
