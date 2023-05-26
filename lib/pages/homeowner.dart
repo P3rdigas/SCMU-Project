@@ -11,14 +11,16 @@ import '../utils/messages.dart';
 import '../utils/reusable.dart';
 
 class HomeOwner extends StatefulWidget {
-  const HomeOwner({Key? key}) : super(key: key);
+  const HomeOwner({Key? key, required this.kind}) : super(key: key);
+  final String kind;
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpState createState() => _SignUpState(kind);
 }
 
 class _SignUpState extends State<HomeOwner> {
-
+  late final String kind;
+  _SignUpState(this.kind);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -69,14 +71,9 @@ class _SignUpState extends State<HomeOwner> {
                                 0, MediaQuery.of(context).size.height * 0.05, 0, 0),
                             child: Column(
                               children: <Widget>[
-                                office("Owner"),
+                                office(),
                                 SizedBox(height: 30,),
-                                office("Owner"),
-                                SizedBox(height: 30,),
-                                office("Owner"),
-                                SizedBox(height: 30,),
-                                office("Owner"),
-                                SizedBox(height: 40,),
+
                               ],
                             ),
                           )
@@ -88,38 +85,13 @@ class _SignUpState extends State<HomeOwner> {
                 ),
               ),
             ),
-            Positioned(
-                left: MediaQuery.of(context).size.width-90,
-                top: MediaQuery.of(context).size.height-140,
-
-                child:GestureDetector(
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    child: Align(
-                      alignment: Alignment(0,-0.5),
-                      child:Text("+",
-                      style: TextStyle(color: Colors.white, fontFamily: "Inter",fontSize: 50, fontWeight: FontWeight.normal)
-
-                    ),
-                    ),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xFF6CAD7C)),
-                  ),
-                )
-            )
+            plusButton()
           ]),
         )
     );
   }
 
-  Widget office(String s) {
-    String s1;
-    if(s == "Owner") {
-      s1 = "Config";
-    }
-    else {
-      s1 = "Attend";
-    }
+  Widget office() {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
@@ -149,7 +121,7 @@ class _SignUpState extends State<HomeOwner> {
                   const SizedBox(width:10),
                   Text("Work Office 1",
                     style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 15)
-                  )
+                  ),
                 ],
               ),
             ),
@@ -178,24 +150,7 @@ class _SignUpState extends State<HomeOwner> {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                      builder: (context) => const ConfigOffice()));
-                    },
-                  child: Container(
-                      width: 65,
-                      height: 40,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
-                        color: Color(0xFF6CAD7C),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(s1,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Inter"),
-                      )
-                  ))
+                  configOrAttend()
                 ],
               ),
             ),
@@ -203,5 +158,89 @@ class _SignUpState extends State<HomeOwner> {
 
         ),
     ));
+  }
+
+  bool button = true;
+
+  Widget configOrAttend() {
+    if(!button) {
+      print("yauu");
+    }
+    if(kind == "Owner") {
+      return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ConfigOffice()));
+          },
+          child: Container(
+              width: 65,
+              height: 40,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
+                color: Color(0xFF6CAD7C),
+              ),
+              alignment: Alignment.center,
+              child: Text("Config",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Inter"),
+              )
+          ));
+
+    }
+    else {
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            button = !button;
+            print(button);
+          });
+        },
+        child: Container(
+          width: 65,
+          height: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: button ? Color(0xFF6CAD7C) : Colors.white,
+            border: button ? null : Border.all(color: Colors.red, width: 2),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            button ? "Attend" : "Leave",
+            style: TextStyle(
+              color: button ? Colors.white : Colors.red,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget plusButton() {
+    if(kind == "Owner") {
+      return Positioned(
+          left: MediaQuery.of(context).size.width-90,
+          top: MediaQuery.of(context).size.height-140,
+
+          child:GestureDetector(
+            child: Container(
+              width: 70,
+              height: 70,
+              child: Align(
+                alignment: Alignment(0,-0.5),
+                child:Text("+",
+                    style: TextStyle(color: Colors.white, fontFamily: "Inter",fontSize: 50, fontWeight: FontWeight.normal)
+
+                ),
+              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xFF6CAD7C)),
+            ),
+          )
+      );
+    }
+    else {
+      return Container();
+    }
   }
 }

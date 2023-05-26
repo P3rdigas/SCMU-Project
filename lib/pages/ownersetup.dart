@@ -5,23 +5,30 @@ import 'package:app/pages/signin.dart';
 import 'package:app/pages/signup.dart';
 import 'package:flutter/material.dart';
 
+import 'ownersetup.dart';
+
 
 
 
 class OwnerSetUp extends StatefulWidget {
-  const OwnerSetUp({Key? key}) : super(key: key);
 
+  const OwnerSetUp({Key? key, required this.kind}) : super(key: key);
+  final String kind;
   @override
-  _SignInState createState() => _SignInState();
+  _SignInState createState() => _SignInState(kind);
 }
 
 class _SignInState extends State<OwnerSetUp> {
+  late final String kind;
+  _SignInState(this.kind);
   int _seletedItem = 0;
-  var _pages = [HomeOwner(), SignIn()];
+
   var _pageController = PageController();
+
 
   @override
   Widget build(BuildContext context) {
+    var _pages = [HomeOwner(kind: "Owner"), HomeOwner(kind: "User")];
     return Scaffold(
       body: PageView(
         children: _pages,
