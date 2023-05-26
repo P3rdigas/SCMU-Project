@@ -1,6 +1,5 @@
 import 'package:app/pages/front.dart';
 import 'package:app/pages/signin.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 import '../utils/messages.dart';
 import '../utils/reusable.dart';
+import 'initialConfigsUser.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key, required this.kind}) : super(key: key);
@@ -157,12 +157,15 @@ class _SignUpState extends State<SignUp> {
                                     password:
                                         passwordTextController.text.trim())
                                 .then((value) {
-                              addUserDetails(
-                                  value.user?.uid,
-                                  nameTextController.text.trim(),
-                                  emailTextController.text.trim(),
-                                  kind);
-                              successMessage(context, "Signin complete");
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => InitialConfigsUser(
+                                          email:
+                                              emailTextController.text.trim(),
+                                          kind: kind,
+                                          name:
+                                              nameTextController.text.trim())));
                             });
                           } on FirebaseAuthException catch (e) {
                             errorMessage(context, e.message.toString());
@@ -176,16 +179,5 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
         ));
-  }
-
-  Future addUserDetails(
-      String? uID, String name, String email, String kind) async {
-    await FirebaseFirestore.instance.collection("Users").doc(uID).set({
-      "Name": name,
-      "Email": email,
-      "Kind": kind,
-      "Temperature": -1,
-      "Lights": -1
-    });
   }
 }

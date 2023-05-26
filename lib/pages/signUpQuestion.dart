@@ -10,7 +10,7 @@ class SignUpQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Padding(
@@ -18,7 +18,7 @@ class SignUpQuestion extends StatelessWidget {
               20, MediaQuery.of(context).size.height * 0.05, 20, 0),
           child: Column(
             children: <Widget>[
-              Container(
+              SizedBox(
                 height: 80,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

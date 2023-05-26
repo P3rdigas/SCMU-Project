@@ -1,17 +1,20 @@
-import 'package:app/pages/front.dart';
-import 'package:app/pages/homeowner.dart';
 import 'package:app/pages/ownersetup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../DTO/users.dart';
+
 class ConfigOffice extends StatefulWidget {
-  const ConfigOffice({Key? key}) : super(key: key);
+  const ConfigOffice({Key? key, required this.user}) : super(key: key);
+
+  final UserDTO user;
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpState createState() => _SignUpState(user);
 }
 
 class _SignUpState extends State<ConfigOffice> {
+  final UserDTO user;
 
   bool lightBool = true;
   bool heaterBool = true;
@@ -19,67 +22,72 @@ class _SignUpState extends State<ConfigOffice> {
   double _heaterV = 12.00;
   double _rollerV = 0.00;
 
+  _SignUpState(this.user);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: ThemeData(useMaterial3: true),
-        home:GestureDetector(
-
-        onTap: () => FocusScope.of(context).unfocus(),
-    child: Scaffold(
-
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: Padding(
-        padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.08, 30, 0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const OwnerSetUp(kind: "Owner")));
-                  },
-                  child: const Icon(Icons.arrow_back_ios_new),
-                ),
-                Container(
-                  child: Align(
-                    child: Text("Work Office 1",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 25)),
-                ),
-
-                ),
-                Container()
-              ],
-            ),
-            SizedBox(height: 40),
-            Saving(),
-            SizedBox(height: 40),
-            Lights("assets/icons/light-bulb.png", "Light Intensity", "LIGHTS OFF"),
-            SizedBox(height: 40),
-            Heater("assets/icons/air-source-heat-pump.png", "Heater", "HEATER OFF"),
-            SizedBox(height: 40),
-            Roller("assets/icons/up-and-down.png", "Roller Blind", "HEATER OFF"),
-            SizedBox(height: 40),
-          ],
-        ))),
-      )
-    )
-    ));
+        home: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+                body: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                  child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          20, MediaQuery.of(context).size.height * 0.08, 30, 0),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              OwnerSetUp(user: user)));
+                                },
+                                child: const Icon(Icons.arrow_back_ios_new),
+                              ),
+                              Container(
+                                child: Align(
+                                  child: Text("Work Office 1",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Inter",
+                                          fontSize: 25)),
+                                ),
+                              ),
+                              Container()
+                            ],
+                          ),
+                          SizedBox(height: 40),
+                          Saving(),
+                          SizedBox(height: 40),
+                          Lights("assets/icons/light-bulb.png",
+                              "Light Intensity", "LIGHTS OFF"),
+                          SizedBox(height: 40),
+                          Heater("assets/icons/air-source-heat-pump.png",
+                              "Heater", "HEATER OFF"),
+                          SizedBox(height: 40),
+                          Roller("assets/icons/up-and-down.png", "Roller Blind",
+                              "HEATER OFF"),
+                          SizedBox(height: 40),
+                        ],
+                      ))),
+            ))));
   }
 
   Widget Saving() {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
           color: Color(0xFF6CAD7C),
           boxShadow: [
             BoxShadow(
@@ -101,11 +109,16 @@ class _SignUpState extends State<ConfigOffice> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    Container(height: 50,child: Image.asset("assets/icons/flash.png")),
-                    const SizedBox(width:10),
+                    Container(
+                        height: 50,
+                        child: Image.asset("assets/icons/flash.png")),
+                    const SizedBox(width: 10),
                     Text("Energy Saving",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 20)
-                    )
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Inter",
+                            fontSize: 20))
                   ],
                 ),
               ),
@@ -115,66 +128,86 @@ class _SignUpState extends State<ConfigOffice> {
                 width: MediaQuery.of(context).size.width,
                 height: 0.2,
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Container(
                 child: Stack(
                   children: <Widget>[
                     Container(
                       alignment: Alignment.topLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text("Today",
-                              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "Inter",fontSize: 10),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: <Widget>[
-                                Icon(CupertinoIcons.arrow_up, color: Colors.white, size:20),
-                                Text("22 kW",
-                                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "Inter",fontSize: 18),
-                                ),
-                              ],
-                            )
-
-                          ],
-                        ),
-                    ),
-                    Container(
-                      alignment: Alignment(0.2,0.2),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Container(
-                            alignment: Alignment(0.2,0.2),
-                            child:Text("This Month",
-                              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "Inter",fontSize: 10),
-                            ),
+                          Text(
+                            "Today",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Inter",
+                                fontSize: 10),
                           ),
                           const SizedBox(height: 10),
-                          Stack(
+                          Row(
                             children: <Widget>[
-                              Container(
-                                alignment: Alignment(0,0),
-                                child: Icon(CupertinoIcons.arrow_up, color: Colors.white, size:20),),
-                              Container(
-                                alignment: Alignment(0.35,0.35),
-
-                                child: Text("22 kW",
-                                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "Inter",fontSize: 18),
-                                ),
+                              Icon(CupertinoIcons.arrow_up,
+                                  color: Colors.white, size: 20),
+                              Text(
+                                "22 kW",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Inter",
+                                    fontSize: 18),
                               ),
                             ],
-                          ),
-
+                          )
                         ],
-                      )
-                    )
+                      ),
+                    ),
+                    Container(
+                        alignment: Alignment(0.2, 0.2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment(0.2, 0.2),
+                              child: Text(
+                                "This Month",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Inter",
+                                    fontSize: 10),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                  alignment: Alignment(0, 0),
+                                  child: Icon(CupertinoIcons.arrow_up,
+                                      color: Colors.white, size: 20),
+                                ),
+                                Container(
+                                  alignment: Alignment(0.35, 0.35),
+                                  child: Text(
+                                    "22 kW",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Inter",
+                                        fontSize: 18),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ))
                   ],
                 ),
               ),
             ],
-
           ),
         ));
   }
@@ -183,7 +216,8 @@ class _SignUpState extends State<ConfigOffice> {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
           color: Color(0xFFffffff),
           boxShadow: [
             BoxShadow(
@@ -208,23 +242,27 @@ class _SignUpState extends State<ConfigOffice> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        Container(height: 50,child: Image.asset(image)),
-                        const SizedBox(width:10),
+                        Container(height: 50, child: Image.asset(image)),
+                        const SizedBox(width: 10),
                         Text(title,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 15)
-                        ),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Inter",
+                                fontSize: 15)),
                       ],
                     ),
                     Row(
                       children: <Widget>[
-                        Switch(value: lightBool,
-                          trackColor: trackColor,
-                          thumbColor: const MaterialStatePropertyAll<Color>(Color(0xFF6CAD7C)),
-                          onChanged: (bool value) {
-                            setState(() {lightBool = value;
-                            });
-                          }
-                          ),
+                        Switch(
+                            value: lightBool,
+                            trackColor: trackColor,
+                            thumbColor: const MaterialStatePropertyAll<Color>(
+                                Color(0xFF6CAD7C)),
+                            onChanged: (bool value) {
+                              setState(() {
+                                lightBool = value;
+                              });
+                            }),
                       ],
                     )
                   ],
@@ -243,15 +281,15 @@ class _SignUpState extends State<ConfigOffice> {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   Widget Heater(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
           color: Color(0xFFffffff),
           boxShadow: [
             BoxShadow(
@@ -276,23 +314,27 @@ class _SignUpState extends State<ConfigOffice> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        Container(height: 50,child: Image.asset(image)),
-                        const SizedBox(width:10),
+                        Container(height: 50, child: Image.asset(image)),
+                        const SizedBox(width: 10),
                         Text(title,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 15)
-                        ),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Inter",
+                                fontSize: 15)),
                       ],
                     ),
                     Row(
                       children: <Widget>[
-                        Switch(value: heaterBool,
+                        Switch(
+                            value: heaterBool,
                             trackColor: trackColor,
-                            thumbColor: const MaterialStatePropertyAll<Color>(Color(0xFF6CAD7C)),
+                            thumbColor: const MaterialStatePropertyAll<Color>(
+                                Color(0xFF6CAD7C)),
                             onChanged: (bool value) {
-                              setState(() {heaterBool = value;
+                              setState(() {
+                                heaterBool = value;
                               });
-                            }
-                        ),
+                            }),
                       ],
                     )
                   ],
@@ -311,15 +353,15 @@ class _SignUpState extends State<ConfigOffice> {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   Widget Roller(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
           color: Color(0xFFffffff),
           boxShadow: [
             BoxShadow(
@@ -341,11 +383,13 @@ class _SignUpState extends State<ConfigOffice> {
               Container(
                 child: Row(
                   children: <Widget>[
-                        Container(height: 50,child: Image.asset(image)),
-                        const SizedBox(width:10),
-                        Text(title,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 15)
-                        ),
+                    Container(height: 50, child: Image.asset(image)),
+                    const SizedBox(width: 10),
+                    Text(title,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Inter",
+                            fontSize: 15)),
                   ],
                 ),
               ),
@@ -362,25 +406,21 @@ class _SignUpState extends State<ConfigOffice> {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   Widget _ON_OFF(bool b, String offMessage, String s) {
-    if(b) {
-      if(s =="light") {
+    if (b) {
+      if (s == "light") {
         return Lights_ON();
-      }
-      else {
-        if(s =="heater") {
+      } else {
+        if (s == "heater") {
           return Heater_ON();
-        }
-        else {
+        } else {
           return Roller_ON();
         }
       }
-    }
-    else {
+    } else {
       return Lights_OFF(offMessage);
     }
   }
@@ -396,7 +436,7 @@ class _SignUpState extends State<ConfigOffice> {
         showValueIndicator: ShowValueIndicator.always,
       ),
       child: Container(
-        width:MediaQuery.of(context).size.width*0.75,
+        width: MediaQuery.of(context).size.width * 0.75,
         child: Slider(
           value: _lightV,
           label: _lightV.round().toString() + "%",
@@ -405,11 +445,10 @@ class _SignUpState extends State<ConfigOffice> {
               _lightV = value;
             });
           },
-          min:0,
-          max:100,
+          min: 0,
+          max: 100,
         ),
       ),
-
     );
   }
 
@@ -424,7 +463,7 @@ class _SignUpState extends State<ConfigOffice> {
         showValueIndicator: ShowValueIndicator.always,
       ),
       child: Container(
-        width:MediaQuery.of(context).size.width*0.75,
+        width: MediaQuery.of(context).size.width * 0.75,
         child: Slider(
           value: _heaterV,
           label: _heaterV.round().toString() + "ºC",
@@ -433,11 +472,10 @@ class _SignUpState extends State<ConfigOffice> {
               _heaterV = value;
             });
           },
-          min:12,
-          max:30,
+          min: 12,
+          max: 30,
         ),
       ),
-
     );
   }
 
@@ -452,7 +490,7 @@ class _SignUpState extends State<ConfigOffice> {
         showValueIndicator: ShowValueIndicator.always,
       ),
       child: Container(
-        width:MediaQuery.of(context).size.width*0.75,
+        width: MediaQuery.of(context).size.width * 0.75,
         child: Slider(
           value: _rollerV,
           label: _rollerV.round().toString() + "%",
@@ -461,11 +499,10 @@ class _SignUpState extends State<ConfigOffice> {
               _rollerV = value;
             });
           },
-          min:0,
-          max:100,
+          min: 0,
+          max: 100,
         ),
       ),
-
     );
   }
 
@@ -474,15 +511,17 @@ class _SignUpState extends State<ConfigOffice> {
       children: <Widget>[
         SizedBox(height: 15),
         Text(offMessage,
-            style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold, fontFamily: "Inter")
-        )
+            style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Inter"))
       ],
     );
   }
 
   final MaterialStateProperty<Color?> overlayColor =
-  MaterialStateProperty.resolveWith<Color?>(
-        (Set<MaterialState> states) {
+      MaterialStateProperty.resolveWith<Color?>(
+    (Set<MaterialState> states) {
       // Material color when switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade50;
@@ -499,8 +538,8 @@ class _SignUpState extends State<ConfigOffice> {
   );
 
   final MaterialStateProperty<Color?> trackColor =
-  MaterialStateProperty.resolveWith<Color?>(
-        (Set<MaterialState> states) {
+      MaterialStateProperty.resolveWith<Color?>(
+    (Set<MaterialState> states) {
       // Track color when the switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade100;

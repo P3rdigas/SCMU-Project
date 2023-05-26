@@ -1,10 +1,17 @@
-import 'package:app/pages/welcome.dart';
+import 'package:app/pages/ownersetup.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../DTO/users.dart';
+import '../utils/messages.dart';
 import '../utils/reusable.dart';
 
 class InitialConfigsUser extends StatefulWidget {
+  final String email;
+  final String kind;
+  final String name;
+
   final double sliderHeightTemp;
   final int minTemp;
   final int maxTemp;
@@ -16,6 +23,10 @@ class InitialConfigsUser extends StatefulWidget {
 
   const InitialConfigsUser(
       {super.key,
+      required this.email,
+      required this.kind,
+      required this.name,
+
       //Temp
       this.sliderHeightTemp = 48,
       this.minTemp = 16,
@@ -28,10 +39,14 @@ class InitialConfigsUser extends StatefulWidget {
       this.fullWidthLum = false});
 
   @override
-  _InitialConfigsUser createState() => _InitialConfigsUser();
+  _InitialConfigsUser createState() => _InitialConfigsUser(email, kind, name);
 }
 
 class _InitialConfigsUser extends State<InitialConfigsUser> {
+  late final String email;
+  late final String kind;
+  late final String name;
+
   final controller = PageController();
 
   bool isFirstPage = true;
@@ -47,11 +62,10 @@ class _InitialConfigsUser extends State<InitialConfigsUser> {
     super.dispose();
   }
 
+  _InitialConfigsUser(this.email, this.kind, this.name);
+
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     double paddingFactor = .2;
 
     if (widget.fullWidthTemp) paddingFactor = .3;
@@ -315,26 +329,43 @@ class _InitialConfigsUser extends State<InitialConfigsUser> {
               ),
             ),
             Container(
-              alignment: Alignment.center,
-              width: 100,
-              child: !isLastPage
-                  ? TextButton(
-                      style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF6CAD7C)),
-                      child: const Text("Next"),
-                      onPressed: () => controller.nextPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut),
-                    )
-                  : TextButton(
-                      style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF6CAD7C)),
-                      child: const Text("Get Started"),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const WelcomeScreen()))),
-            )
+                alignment: Alignment.center,
+                width: 100,
+                child: !isLastPage
+                    ? TextButton(
+                        style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF6CAD7C)),
+                        child: const Text("Next"),
+                        onPressed: () => controller.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut),
+                      )
+                    : TextButton(
+                        style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF6CAD7C)),
+                        child: const Text("Get Started"),
+                        onPressed: () async {
+                          final user = UserDTO(
+                              email: email,
+                              kind: kind,
+                              luminosity: _luminosity.toInt(),
+                              name: name,
+                              temperature: _temperature.toInt());
+
+                          await FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc(email)
+                              .set(user.toJson())
+                              .whenComplete(() {
+                            successMessage(context, "Signup completed");
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        OwnerSetUp(user: user)));
+                          });
+                        },
+                      ))
           ],
         ),
       ),
