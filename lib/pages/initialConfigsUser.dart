@@ -348,10 +348,10 @@ class _InitialConfigsUser extends State<InitialConfigsUser> {
                           final user = UserDTO(
                               email: email,
                               kind: kind,
-                              luminosity: _luminosity.toInt(),
+                              luminosity: _luminosity.round(),
                               name: name,
-                              temperature: _temperature.toInt());
-
+                              temperature: _temperature.round(),
+                              offices: <dynamic>[]);
                           await FirebaseFirestore.instance
                               .collection("Users")
                               .doc(email)

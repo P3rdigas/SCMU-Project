@@ -1,5 +1,8 @@
+import 'package:app/DTO/office.dart';
 import 'package:app/DTO/users.dart';
 import 'package:app/pages/configoffice.dart';
+import 'package:app/utils/messages.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +17,22 @@ class HomeOwner extends StatefulWidget {
 
 class _SignUpState extends State<HomeOwner> {
   late final UserDTO user;
+
+  late TextEditingController officeNameController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    officeNameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    officeNameController.dispose();
+
+    super.dispose();
+  }
 
   _SignUpState(this.user);
 
@@ -227,6 +246,9 @@ class _SignUpState extends State<HomeOwner> {
           left: MediaQuery.of(context).size.width - 90,
           top: MediaQuery.of(context).size.height - 140,
           child: GestureDetector(
+            onTap: () async {
+              openCreateOfficeDialog();
+            },
             child: Container(
               width: 70,
               height: 70,
@@ -245,6 +267,86 @@ class _SignUpState extends State<HomeOwner> {
           ));
     } else {
       return Container();
+    }
+  }
+
+  Future<String?> openCreateOfficeDialog() => showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: const Text("Add an Office"),
+            content: TextField(
+              autofocus: true,
+              cursorColor: const Color(0xFF6CAD7C),
+              controller: officeNameController,
+              decoration: const InputDecoration(
+                hintText: "Office Name",
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF6CAD7C)),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: close,
+                  style: ButtonStyle(
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.green.shade100)),
+                  child: const Text("Close",
+                      style:
+                          TextStyle(color: Color(0xFF6CAD7C), fontSize: 15))),
+              TextButton(
+                  onPressed: submit,
+                  style: ButtonStyle(
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.green.shade100)),
+                  child: const Text("Create",
+                      style: TextStyle(color: Color(0xFF6CAD7C), fontSize: 15)))
+            ],
+          ));
+
+  void close() {
+    Navigator.of(context).pop();
+
+    officeNameController.clear();
+  }
+
+  Future<void> submit() async {
+    if (officeNameController.text.trim().isNotEmpty) {
+      final office = OfficeDTO(
+          owner: user.email,
+          name: officeNameController.text.trim(),
+          blind: 0,
+          isLightsOn: false,
+          luminosity: 0,
+          isHeaterOn: false,
+          temperature: 16,
+          employees: <String>[]);
+
+      await FirebaseFirestore.instance
+          .collection("Offices")
+          .add(office.toJson())
+          .then((value) async {
+        successMessage(context, "Office created");
+
+        //Atualizar offices do owner
+        List<dynamic> userOffices = user.offices;
+        userOffices.add(value.id);
+
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(user.email)
+            .update({"Offices": userOffices}).then((value) {
+          Navigator.of(context).pop();
+
+          officeNameController.clear();
+        }).catchError((error) {
+          errorMessage(context, error);
+        });
+      }).catchError((error) {
+        errorMessage(context, error);
+      });
+    } else {
+      errorMessage(context, "The name of the office cannot be empty!");
     }
   }
 }

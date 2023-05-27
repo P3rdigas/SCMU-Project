@@ -4,6 +4,7 @@ class UserDTO {
   final int luminosity;
   final String name;
   final int temperature;
+  final List<dynamic> offices;
 
   const UserDTO({
     required this.email,
@@ -11,6 +12,7 @@ class UserDTO {
     required this.luminosity,
     required this.name,
     required this.temperature,
+    required this.offices,
   });
 
   toJson() {
@@ -20,6 +22,7 @@ class UserDTO {
       "Luminosity": luminosity,
       "Name": name,
       "Temperature": temperature,
+      "Offices": offices,
     };
   }
 }

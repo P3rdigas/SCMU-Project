@@ -34,6 +34,7 @@ class _SignInState extends State<OwnerSetUp> {
         children: pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: const Color(0xFF6CAD7C),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.home, color: Colors.black), label: "Home"),
