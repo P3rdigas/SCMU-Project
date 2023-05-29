@@ -93,14 +93,14 @@ class _SignInState extends State<Front> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const SignIn()));
-                        }),
+                        }, 0, 50),
                         firebaseUIButton(context, "Sign Up", () async {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       const SignUpQuestion()));
-                        }),
+                        }, 0, 50),
                       ],
                     ),
                   )

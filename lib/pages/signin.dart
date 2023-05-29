@@ -132,7 +132,7 @@ class _SignInState extends State<SignIn> {
                             errorMessage(context, e.message.toString());
                           }
                         }
-                      }),
+                      }, 0, 50),
                       //TODO
                       forgetPassword()
                     ],

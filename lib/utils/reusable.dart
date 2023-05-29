@@ -47,11 +47,11 @@ TextFormField reusableTextField(
   );
 }
 
-Container firebaseUIButton(BuildContext context, String title, Function onTap) {
+Container firebaseUIButton(BuildContext context, String title, Function onTap, double width, double height) {
   return Container(
     width: MediaQuery.of(context).size.width,
-    height: 50,
-    margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+    height: height,
+    margin: EdgeInsets.fromLTRB(width, 10, 0, 20),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(
       onPressed: () {

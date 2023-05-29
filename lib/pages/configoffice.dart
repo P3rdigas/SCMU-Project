@@ -1,8 +1,11 @@
 import 'package:app/pages/ownersetup.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../DTO/users.dart';
+import '../utils/reusable.dart';
 
 class ConfigOffice extends StatefulWidget {
   const ConfigOffice({Key? key, required this.user}) : super(key: key);
@@ -14,7 +17,10 @@ class ConfigOffice extends StatefulWidget {
 }
 
 class _SignUpState extends State<ConfigOffice> {
+
+  List<bool> _isOpen = [false, false];
   final UserDTO user;
+  final TextEditingController _emailTextController = TextEditingController();
 
   bool lightBool = true;
   bool heaterBool = true;
@@ -68,18 +74,144 @@ class _SignUpState extends State<ConfigOffice> {
                           SizedBox(height: 40),
                           Saving(),
                           SizedBox(height: 40),
-                          Lights("assets/icons/light-bulb.png",
-                              "Light Intensity", "LIGHTS OFF"),
+                          Lights("assets/icons/light-bulb.png", "Light Intensity", "LIGHTS OFF"),
                           SizedBox(height: 40),
-                          Heater("assets/icons/air-source-heat-pump.png",
-                              "Heater", "HEATER OFF"),
+                          Heater("assets/icons/air-source-heat-pump.png", "Heater", "HEATER OFF"),
                           SizedBox(height: 40),
-                          Roller("assets/icons/up-and-down.png", "Roller Blind",
-                              "HEATER OFF"),
+                          Roller("assets/icons/up-and-down.png", "Roller Blind", "HEATER OFF"),
+                          SizedBox(height: 40),
+                          expand(),
                           SizedBox(height: 40),
                         ],
                       ))),
             ))));
+  }
+
+  Widget expand() {
+    return ExpansionPanelList(
+      elevation: 0,
+      animationDuration: Duration(seconds: 2),
+      expansionCallback: (i, isOpen) {
+        setState(() {
+          _isOpen[i] = !isOpen;
+        });
+
+      },
+      children: [
+        ExpansionPanel(
+          canTapOnHeader: true,
+          headerBuilder: (BuildContext context, bool isExpanded) {
+            return Row(children:[
+              SizedBox(height: 10),
+              Text("Office Tracking", style:TextStyle(fontFamily: "Inter", fontWeight: FontWeight.bold, fontSize:20))]);
+          },
+          body: calendarDiv(),
+          isExpanded: _isOpen[0]
+        ),
+        ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return Row(children:[
+                SizedBox(height: 10),
+                Text("Add User", style:TextStyle(fontFamily: "Inter", fontWeight: FontWeight.bold, fontSize:20))]);
+            },
+          body: addUserDiv(),
+          isExpanded: _isOpen[1]
+        ),
+      ]
+    );
+  }
+
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+
+  Widget addUserDiv() {
+    return Column(
+      children: [
+        Text("Insert an email to add a User to this Office:",
+            style: TextStyle(fontFamily: "Inter")
+        ),
+        SizedBox(height: 30),
+        reusableTextField("Email", Icons.email_outlined, false,
+            _emailTextController, (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter your email address";
+              } else if (!EmailValidator.validate(value)) {
+                return "Please enter a valid email.";
+              }
+              return null;
+            }),
+        SizedBox(height: 30),
+        firebaseUIButton(context, "Add User", () async {
+        }, MediaQuery.of(context).size.width/2, 30),
+      ],
+    );
+  }
+
+  Widget calendarDiv() {
+    return Column(
+      children: [
+        Text(_selectedDay.toString()),
+        Text(_focusedDay.toString()),
+        TableCalendar(
+          firstDay: DateTime.utc(2010, 10, 16),
+          lastDay: DateTime.utc(2030, 3, 14),
+          focusedDay: _focusedDay,
+          headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true),
+          selectedDayPredicate: (day) {
+            return isSameDay(_selectedDay, day);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay; // update `_focusedDay` here as well
+            });
+          },
+          onPageChanged: (focusedDay) {
+            _focusedDay = focusedDay;
+          },
+        ),
+        SizedBox(height: 40),
+        CardDiv(),
+        SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget CardDiv() {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              blurRadius: 5.0, // soften the shadow
+              offset: Offset(
+                0, // Move to right 5  horizontally
+                5.0, // Move to bottom 5 Vertically
+              ),
+            )
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+              10, 5, 10, 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset("assets/icons/profile.png"),
+              Text(user.name, style: TextStyle(fontFamily: "Inter", fontSize: 12)),
+              Text("Entrada/Saída - 00h00", style: TextStyle(fontFamily: "Inter", fontSize: 12)),
+
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget Saving() {
@@ -550,4 +682,25 @@ class _SignUpState extends State<ConfigOffice> {
       return null;
     },
   );
+}
+
+class Item {
+  Item({
+    required this.expandedValue,
+    required this.headerValue,
+    this.isExpanded = false,
+  });
+
+  String expandedValue;
+  String headerValue;
+  bool isExpanded;
+}
+
+List<Item> generateItems(int numberOfItems) {
+  return List<Item>.generate(numberOfItems, (int index) {
+    return Item(
+      headerValue: 'Panel $index',
+      expandedValue: 'This is item number $index',
+    );
+  });
 }
