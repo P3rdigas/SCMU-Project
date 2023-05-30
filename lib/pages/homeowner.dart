@@ -36,6 +36,24 @@ class _SignUpState extends State<HomeOwner> {
 
   _SignUpState(this.user);
 
+  Future<List<dynamic>> officeData() async {
+    List<dynamic> officesData = [];
+
+    for (String officeId in user.offices) {
+      await FirebaseFirestore.instance
+          .collection("Offices")
+          .doc(officeId)
+          .get()
+          .then((DocumentSnapshot doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data["ID"] = doc.id;
+        officesData.add(data);
+      });
+    }
+
+    return officesData;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -75,17 +93,55 @@ class _SignUpState extends State<HomeOwner> {
                       ),
                       SingleChildScrollView(
                           child: Padding(
-                        padding: EdgeInsets.fromLTRB(
-                            0, MediaQuery.of(context).size.height * 0.05, 0, 0),
-                        child: Column(
-                          children: <Widget>[
-                            office(),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                          ],
-                        ),
-                      )),
+                              padding: EdgeInsets.fromLTRB(
+                                  0,
+                                  MediaQuery.of(context).size.height * 0.05,
+                                  0,
+                                  0),
+                              child: user.offices.isEmpty
+                                  ? const Text("0 offices created",
+                                      //Font Roboto Semi Bold
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold))
+                                  : FutureBuilder(
+                                      future: officeData(),
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData)
+                                          return Container();
+
+                                        List<Widget> officesItems = [];
+
+                                        if (snapshot.data!.isNotEmpty) {
+                                          for (Map<String, dynamic> data
+                                              in snapshot.data!) {
+                                            final officeDTO = OfficeDTO(
+                                                owner: data["Owner"],
+                                                name: data["Name"],
+                                                blind: data["Blind"],
+                                                isLightsOn: data["Lights"],
+                                                luminosity: data["Luminosity"],
+                                                isHeaterOn: data["Heater"],
+                                                temperature:
+                                                    data["Temperature"],
+                                                employees: data["Employees"]);
+
+                                            officesItems.add(
+                                                office(data["ID"], officeDTO));
+
+                                            var item = Container(
+                                              height: 30,
+                                            );
+
+                                            officesItems.add(item);
+                                          }
+                                        }
+                                        return Column(
+                                          children: officesItems,
+                                        );
+                                      },
+                                    ))),
                     ],
                   ),
                 ),
@@ -96,7 +152,7 @@ class _SignUpState extends State<HomeOwner> {
         ));
   }
 
-  Widget office() {
+  Widget office(String id, OfficeDTO office) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
@@ -126,8 +182,8 @@ class _SignUpState extends State<HomeOwner> {
                       height: 50,
                       child: Image.asset("assets/icons/office.png")),
                   const SizedBox(width: 10),
-                  const Text("Work Office 1",
-                      style: TextStyle(
+                  Text(office.name,
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontFamily: "Inter",
                           fontSize: 15)),
@@ -142,9 +198,9 @@ class _SignUpState extends State<HomeOwner> {
                   Row(
                     children: <Widget>[
                       const Icon(CupertinoIcons.thermometer),
-                      const Text(
-                        "23º",
-                        style: TextStyle(
+                      Text(
+                        "${office.temperature.toString()}º",
+                        style: const TextStyle(
                             color: Colors.lightBlue,
                             fontWeight: FontWeight.bold,
                             fontFamily: "Inter",
@@ -154,9 +210,9 @@ class _SignUpState extends State<HomeOwner> {
                         width: 5,
                       ),
                       const Icon(CupertinoIcons.lightbulb),
-                      const Text(
-                        "80%",
-                        style: TextStyle(
+                      Text(
+                        "${office.luminosity.toString()}%",
+                        style: const TextStyle(
                             color: Colors.lightBlue,
                             fontWeight: FontWeight.bold,
                             fontFamily: "Inter",
@@ -169,15 +225,15 @@ class _SignUpState extends State<HomeOwner> {
                           height: 23,
                           child:
                               Image.asset("assets/icons/air-conditioner.png")),
-                      const Text("ON",
-                          style: TextStyle(
+                      Text(office.isHeaterOn ? "ON" : "OFF",
+                          style: const TextStyle(
                               color: Colors.lightBlue,
                               fontWeight: FontWeight.bold,
                               fontFamily: "Inter",
                               fontSize: 12))
                     ],
                   ),
-                  configOrAttend()
+                  configOrAttend(id, office)
                 ],
               ),
             ],
@@ -187,14 +243,15 @@ class _SignUpState extends State<HomeOwner> {
 
   bool button = true;
 
-  Widget configOrAttend() {
+  Widget configOrAttend(String id, OfficeDTO office) {
     if (user.kind == "Owner") {
       return GestureDetector(
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ConfigOffice(user: user)));
+                    builder: (context) =>
+                        ConfigOffice(id: id, office: office, user: user)));
           },
           child: Container(
               width: 65,
