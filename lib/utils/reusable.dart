@@ -47,7 +47,7 @@ TextFormField reusableTextField(
   );
 }
 
-Container firebaseUIButton(BuildContext context, String title, Function onTap, double width, double height) {
+Container firebaseUIButton(BuildContext context, String title, Function onTap, double width, double height, Color color) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: height,
@@ -62,7 +62,7 @@ Container firebaseUIButton(BuildContext context, String title, Function onTap, d
             if (states.contains(MaterialState.pressed)) {
               return Colors.white;
             }
-            return const Color(0xFF6CAD7C);
+            return color;
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),

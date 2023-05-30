@@ -212,7 +212,7 @@ class _SignUpState extends State<ConfigOffice> {
               errorMessage(context, "No user with that email");
             }
           });
-        }, MediaQuery.of(context).size.width / 2, 30),
+        }, MediaQuery.of(context).size.width / 2, 30, const Color(0xFF6CAD7C)),
       ],
     );
   }

@@ -171,7 +171,7 @@ class _SignUpState extends State<SignUp> {
                             errorMessage(context, e.message.toString());
                           }
                         }
-                      }, 0, 50),
+                      }, 0, 50, const Color(0xFF6CAD7C)),
                     ],
                   ),
                 ),

@@ -73,13 +73,13 @@ class SignUpQuestion extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SignUp(kind: "Owner")));
-              }, 0, 50),
+              }, 0, 50, const Color(0xFF6CAD7C),),
               firebaseUIButton(context, "No", () async {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SignUp(kind: "User")));
-              }, 0, 50),
+              }, 0, 50, const Color(0xFF6CAD7C),),
             ],
           ),
         ),
