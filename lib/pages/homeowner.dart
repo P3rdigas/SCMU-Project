@@ -99,10 +99,13 @@ class _SignUpState extends State<HomeOwner> {
                                   0,
                                   0),
                               child: user.offices.isEmpty
-                                  ? const Text("0 offices created",
+                                  ? Text(
+                                      user.kind == "Owner"
+                                          ? "No offices created"
+                                          : "You aren´t employee in any office",
                                       //Font Roboto Semi Bold
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold))
                                   : FutureBuilder(
