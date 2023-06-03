@@ -36,6 +36,8 @@ class _SignUpState extends State<ConfigOffice> {
 
   late bool lightBool;
   late bool heaterBool;
+  late bool lightBoolAutomatic;
+  late bool heaterBoolAutomatic;
   late double _lightV;
   late double _heaterV;
   late double _rollerV;
@@ -48,6 +50,8 @@ class _SignUpState extends State<ConfigOffice> {
 
     lightBool = office.isLightsOn;
     heaterBool = office.isHeaterOn;
+    lightBoolAutomatic = true;
+    heaterBoolAutomatic = true;
     _lightV = office.luminosity.toDouble();
     _heaterV = office.temperature.toDouble();
     _rollerV = office.blind.toDouble();
@@ -484,7 +488,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 150,
+        height: 230,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFffffff),
@@ -523,7 +527,7 @@ class _SignUpState extends State<ConfigOffice> {
                     children: <Widget>[
                       Switch(
                           value: lightBool,
-                          trackColor: trackColor,
+                          trackColor: trackColorGreen,
                           thumbColor: const MaterialStatePropertyAll<Color>(
                               Color(0xFF6CAD7C)),
                           onChanged: (bool value) async {
@@ -557,7 +561,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Heater(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 150,
+        height: 230,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFffffff),
@@ -596,7 +600,7 @@ class _SignUpState extends State<ConfigOffice> {
                     children: <Widget>[
                       Switch(
                           value: heaterBool,
-                          trackColor: trackColor,
+                          trackColor: trackColorGreen,
                           thumbColor: const MaterialStatePropertyAll<Color>(
                               Color(0xFF6CAD7C)),
                           onChanged: (bool value) async {
@@ -693,67 +697,164 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   Widget Lights_ON() {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        activeTrackColor: const Color(0xFF6CAD7C),
-        inactiveTrackColor: Colors.green.shade100,
-        trackShape: const RoundedRectSliderTrackShape(),
-        thumbColor: const Color(0xFF6CAD7C),
-        valueIndicatorColor: const Color(0xFF6CAD7C),
-        showValueIndicator: ShowValueIndicator.always,
-      ),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.75,
-        child: Slider(
-          value: _lightV,
-          label: "${_lightV.round()}%",
-          onChanged: (value) async {
-            setState(() {
-              _lightV = value;
-            });
-
-            await FirebaseFirestore.instance
-                .collection("Offices")
-                .doc(id)
-                .update({"Luminosity": value.round()});
-          },
-          min: 0,
-          max: 100,
+    return Column(
+      children: [
+        Text("Switch ON to control the lights:",
+            style: const TextStyle(
+              color: Color(0xFF6CAD7C),
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            )
         ),
-      ),
+        SizedBox(height: 10),
+        Switch(
+            value: lightBoolAutomatic,
+            trackColor: trackColorGreen,
+            thumbColor: const MaterialStatePropertyAll<Color>(
+                Color(0xFF6CAD7C)),
+            onChanged: (bool value) async {
+              setState(() {
+                lightBoolAutomatic = value;
+              });
+
+              await FirebaseFirestore.instance
+                  .collection("Offices")
+                  .doc(id)
+                  .update({"Heater": value});
+            }),
+
+        automaticLights(),
+      ],
     );
   }
 
-  Widget Heater_ON() {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        activeTrackColor: const Color(0xFF6CAD7C),
-        inactiveTrackColor: Colors.green.shade100,
-        trackShape: const RoundedRectSliderTrackShape(),
-        thumbColor: const Color(0xFF6CAD7C),
-        valueIndicatorColor: const Color(0xFF6CAD7C),
-        showValueIndicator: ShowValueIndicator.always,
-      ),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.75,
-        child: Slider(
-          value: _heaterV,
-          label: "${_heaterV.round()}ºC",
-          onChanged: (value) async {
-            setState(() {
-              _heaterV = value;
-            });
+  Widget automaticLights() {
+    if(lightBoolAutomatic) {
+      return SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: const Color(0xFF6CAD7C),
+                  inactiveTrackColor: Colors.green.shade100,
+                  trackShape: const RoundedRectSliderTrackShape(),
+                  thumbColor: const Color(0xFF6CAD7C),
+                  valueIndicatorColor: const Color(0xFF6CAD7C),
+                  showValueIndicator: ShowValueIndicator.always,
+                ),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: Slider(
+                    value: _lightV,
+                    label: "${_lightV.round()}%",
+                    onChanged: (value) async {
+                      setState(() {
+                        _lightV = value;
+                      });
 
-            await FirebaseFirestore.instance
-                .collection("Offices")
-                .doc(id)
-                .update({"Temperature": value.round()});
-          },
-          min: 16,
-          max: 30,
+                      await FirebaseFirestore.instance
+                          .collection("Offices")
+                          .doc(id)
+                          .update({"Luminosity": value.round()});
+                    },
+                    min: 0,
+                    max: 100,
+                  ),
+                ),
+      );
+    }
+    else {
+      return Column(
+        children: [
+          SizedBox(height: 15),
+          Text("AUTOMATIC LIGHTS",
+              style: const TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
+              )
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget Heater_ON() {
+    return Column(
+      children: [
+        Text("Switch ON to control the heater:",
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF6CAD7C),
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+
+            )
         ),
-      ),
+        SizedBox(height: 10),
+        Switch(
+            value: heaterBoolAutomatic,
+            trackColor: trackColorGreen,
+            thumbColor: const MaterialStatePropertyAll<Color>(
+                Color(0xFF6CAD7C)),
+            onChanged: (bool value) async {
+              setState(() {
+                heaterBoolAutomatic = value;
+              });
+
+              await FirebaseFirestore.instance
+                  .collection("Offices")
+                  .doc(id)
+                  .update({"Heater": value});
+            }),
+        automaticHeater(),
+      ],
     );
+  }
+
+  Widget automaticHeater() {
+    if(heaterBoolAutomatic) {
+      return SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+          activeTrackColor: const Color(0xFF6CAD7C),
+          inactiveTrackColor: Colors.green.shade100,
+          trackShape: const RoundedRectSliderTrackShape(),
+          thumbColor: const Color(0xFF6CAD7C),
+          valueIndicatorColor: const Color(0xFF6CAD7C),
+          showValueIndicator: ShowValueIndicator.always,
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.75,
+          child: Slider(
+            value: _lightV,
+            label: "${_lightV.round()}%",
+            onChanged: (value) async {
+              setState(() {
+                _lightV = value;
+              });
+
+              await FirebaseFirestore.instance
+                  .collection("Offices")
+                  .doc(id)
+                  .update({"Luminosity": value.round()});
+            },
+            min: 0,
+            max: 100,
+          ),
+        ),
+      );
+    }
+    else {
+      return Column(
+        children: [
+          SizedBox(height: 15),
+          Text("AUTOMATIC HEATER",
+              style: const TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
+              )
+          ),
+        ],
+      );
+    }
   }
 
   Widget Roller_ON() {
@@ -791,12 +892,14 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights_OFF(String offMessage) {
     return Column(
       children: <Widget>[
-        const SizedBox(height: 15),
+        const SizedBox(height: 35),
         Text(offMessage,
             style: const TextStyle(
                 color: Colors.red,
                 fontWeight: FontWeight.bold,
-                fontFamily: "Inter"))
+                fontFamily: "Inter",
+                fontSize: 20
+            ))
       ],
     );
   }
@@ -819,12 +922,26 @@ class _SignUpState extends State<ConfigOffice> {
     },
   );
 
-  final MaterialStateProperty<Color?> trackColor =
+  final MaterialStateProperty<Color?> trackColorGreen =
       MaterialStateProperty.resolveWith<Color?>(
     (Set<MaterialState> states) {
       // Track color when the switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade100;
+      }
+      // Otherwise return null to set default track color
+      // for remaining states such as when the switch is
+      // hovered, focused, or disabled.
+      return null;
+    },
+  );
+
+  final MaterialStateProperty<Color?> trackColorBlue =
+  MaterialStateProperty.resolveWith<Color?>(
+        (Set<MaterialState> states) {
+      // Track color when the switch is selected.
+      if (states.contains(MaterialState.selected)) {
+        return Colors.blue.shade100;
       }
       // Otherwise return null to set default track color
       // for remaining states such as when the switch is
