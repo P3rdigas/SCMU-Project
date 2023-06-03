@@ -19,8 +19,8 @@ class Preferences extends StatefulWidget {
 
 class _SignUpState extends State<Preferences> {
 
-  double _lightV = 0.00;
-  double _heaterV = 16.00;
+  late double _lightV;
+  late double _heaterV;
 
   void initState() {
     super.initState();
