@@ -9,56 +9,73 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Preferences extends StatefulWidget {
-  const Preferences({Key? key}) : super(key: key);
+  const Preferences({Key? key, required this.user}) : super(key: key);
 
+  final UserDTO user;
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpState createState() => _SignUpState(user);
 }
 
 class _SignUpState extends State<Preferences> {
 
-  bool lightBool = true;
-  bool heaterBool = true;
-  double _lightV = 0.00;
-  double _heaterV = 12.00;
+  late double _lightV;
+  late double _heaterV;
+
+  void initState() {
+    super.initState();
+
+    _lightV = user.luminosity.toDouble();
+    _heaterV = user.temperature.toDouble();
+  }
+
+  _SignUpState(this.user);
+  final UserDTO user;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       home: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
-            body: Padding(
-              padding: EdgeInsets.fromLTRB(
-                30, MediaQuery.of(context).size.height * 0.07, 30, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text("Preferences",
-                            //Font Roboto Semi Bold
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold, fontFamily: "Inter")),
-                        SizedBox(height: 40),
-                        Text("Enter the temperature and light intensity that you prefer to work with, so we can regulate it.",
-                            //Font Roboto Semi Bold
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold, fontFamily: "Inter")),
-                        SizedBox(height: 40),
-                        Lights("assets/icons/sunny.png", "Light Intensity", "LIGHTS OFF"),
-                        SizedBox(height: 40),
-                        Heater("assets/icons/hot.png", "Temperature"),
-                        SizedBox(height: 40),
-                      ],
-                    ),
-                    firebaseUIButton(context, "Log Out",() async {}, 0, 50, const Color(0xFF6CAD7C))
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  30, MediaQuery.of(context).size.height * 0.07, 30, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text("Preferences",
+                              //Font Roboto Semi Bold
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold, fontFamily: "Inter")),
+                          SizedBox(height: 40),
+                          Text("Enter the temperature and light intensity that you prefer to work with, so we can regulate it.",
+                              //Font Roboto Semi Bold
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold, fontFamily: "Inter")),
+                          SizedBox(height: 40),
+                          Lights("assets/icons/sunny.png", "Light Intensity", "LIGHTS OFF"),
+                          SizedBox(height: 40),
+                          Heater("assets/icons/hot.png", "Temperature"),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                      firebaseUIButton(context, "Log Out",() async {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Front()));
+                      }, 0, 50, Colors.red)
 
-              ]),
+                ]),
+              ),
             ),
           )),
     );
@@ -90,33 +107,14 @@ class _SignUpState extends State<Preferences> {
             children: <Widget>[
               Container(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Container(height: 50, child: Image.asset(image)),
-                        const SizedBox(width: 10),
-                        Text(title,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Inter",
-                                fontSize: 15)),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Switch(
-                            value: lightBool,
-                            trackColor: trackColor,
-                            thumbColor: const MaterialStatePropertyAll<Color>(
-                                Color(0xFF6CAD7C)),
-                            onChanged: (bool value) {
-                              setState(() {
-                                lightBool = value;
-                              });
-                            }),
-                      ],
-                    )
+                    Container(height: 50, child: Image.asset(image)),
+                    const SizedBox(width: 10),
+                    Text(title,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Inter",
+                            fontSize: 15)),
                   ],
                 ),
               ),
@@ -126,7 +124,7 @@ class _SignUpState extends State<Preferences> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      child: _ON_OFF(lightBool, offMessage, "light"),
+                      child: _ON_OFF(true, "", "light"),
                     ),
                   ],
                 ),
@@ -216,10 +214,14 @@ class _SignUpState extends State<Preferences> {
         child: Slider(
           value: _lightV,
           label: _lightV.round().toString() + "%",
-          onChanged: (value) {
+          onChanged: (value) async {
             setState(() {
               _lightV = value;
             });
+            await FirebaseFirestore.instance
+                .collection("Users")
+                .doc(user.email)
+                .update({"Luminosity": value.round()});
           },
           min: 0,
           max: 100,
@@ -243,10 +245,14 @@ class _SignUpState extends State<Preferences> {
         child: Slider(
           value: _heaterV,
           label: _heaterV.round().toString() + "ºC",
-          onChanged: (value) {
+          onChanged: (value) async {
             setState(() {
               _heaterV = value;
             });
+            await FirebaseFirestore.instance
+                .collection("Users")
+                .doc(user.email)
+                .update({"Temperature": value.round()});
           },
           min: 16,
           max: 30,

@@ -1,5 +1,6 @@
 import 'package:app/DTO/users.dart';
 import 'package:app/pages/homeowner.dart';
+import 'package:app/pages/preferences.dart';
 import 'package:flutter/material.dart';
 
 class OwnerSetUp extends StatefulWidget {
@@ -22,7 +23,7 @@ class _SignInState extends State<OwnerSetUp> {
 
   @override
   Widget build(BuildContext context) {
-    var pages = [HomeOwner(user: user), HomeOwner(user: user)];
+    var pages = [HomeOwner(user: user), Preferences(user: user)];
     return Scaffold(
       body: PageView(
         onPageChanged: (index) {
