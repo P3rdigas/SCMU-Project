@@ -1,4 +1,5 @@
 import 'package:app/DTO/office.dart';
+import 'package:app/DTO/records.dart';
 import 'package:app/pages/ownersetup.dart';
 import 'package:app/utils/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,12 +32,13 @@ class _SignUpState extends State<ConfigOffice> {
   final UserDTO user;
 
   late TextEditingController _emailTextController;
+  List<RecordDTO> records = [];
 
-  bool lightBool = true;
-  bool heaterBool = true;
-  double _lightV = 0.0;
-  double _heaterV = 24.0;
-  double _rollerV = 0.0;
+  late bool lightBool;
+  late bool heaterBool;
+  late double _lightV;
+  late double _heaterV;
+  late double _rollerV;
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _SignUpState extends State<ConfigOffice> {
     _lightV = office.luminosity.toDouble();
     _heaterV = office.temperature.toDouble();
     _rollerV = office.blind.toDouble();
+    getRecordsFromFirebase();
   }
 
   @override
@@ -59,6 +62,71 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   _SignUpState(this.id, this.office, this.user);
+
+  void getRecordsFromFirebase() async {
+    await FirebaseFirestore.instance
+        .collection("Offices")
+        .doc(id)
+        .collection("Records")
+        .get()
+        .then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        Map<String, dynamic> data = docSnapshot.data();
+        Timestamp ts = data["Day"] as Timestamp;
+        final record = RecordDTO(
+            day: ts.toDate(), email: data["Email"], type: data["Type"]);
+        records.add(record);
+      }
+    });
+  }
+
+  List<Widget> recordsData(DateTime selectedDay) {
+    List<Widget> recordsData = [];
+
+    if (records.isEmpty) {
+      var item = const Text("No records created",
+          //Font Roboto Semi Bold
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold));
+
+      recordsData.add(item);
+    } else {
+      for (RecordDTO record in records) {
+        DateTime recordDate = record.day;
+        if (recordDate.day == selectedDay.day &&
+            recordDate.month == selectedDay.month &&
+            recordDate.year == selectedDay.year) {
+          String hours = "${recordDate.hour}h${recordDate.minute}";
+          var item = CardDiv(record.email, record.type, hours);
+          recordsData.add(item);
+          item = const SizedBox(
+            height: 10,
+          );
+          recordsData.add(item);
+        }
+      }
+    }
+
+    return recordsData;
+  }
+
+  Future<List<dynamic>> officeData() async {
+    List<dynamic> officesData = [];
+
+    for (String officeId in user.offices) {
+      await FirebaseFirestore.instance
+          .collection("Offices")
+          .doc(officeId)
+          .get()
+          .then((DocumentSnapshot doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data["ID"] = doc.id;
+        officesData.add(data);
+      });
+    }
+
+    return officesData;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +190,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget expand() {
     return ExpansionPanelList(
         elevation: 0,
-        animationDuration: Duration(seconds: 2),
+        animationDuration: const Duration(seconds: 2),
         expansionCallback: (i, isOpen) {
           setState(() {
             _isOpen[i] = !isOpen;
@@ -242,13 +310,16 @@ class _SignUpState extends State<ConfigOffice> {
           },
         ),
         const SizedBox(height: 40),
-        CardDiv(),
+        Column(
+          children: recordsData(_selectedDay),
+        ),
+        //CardDiv(),
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget CardDiv() {
+  Widget CardDiv(String email, String type, String hours) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Container(
@@ -274,10 +345,10 @@ class _SignUpState extends State<ConfigOffice> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Image.asset("assets/icons/profile.png"),
-              Text(user.name,
+              Text(email,
                   style: const TextStyle(fontFamily: "Inter", fontSize: 12)),
-              const Text("Entrada/Saída - 00h00",
-                  style: TextStyle(fontFamily: "Inter", fontSize: 12)),
+              Text("$type - $hours",
+                  style: const TextStyle(fontFamily: "Inter", fontSize: 12)),
             ],
           ),
         ),

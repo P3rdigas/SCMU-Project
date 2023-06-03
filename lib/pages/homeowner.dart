@@ -1,4 +1,5 @@
 import 'package:app/DTO/office.dart';
+import 'package:app/DTO/records.dart';
 import 'package:app/DTO/users.dart';
 import 'package:app/pages/configoffice.dart';
 import 'package:app/utils/messages.dart';
@@ -273,7 +274,19 @@ class _SignUpState extends State<HomeOwner> {
               )));
     } else {
       return GestureDetector(
-        onTap: () {
+        onTap: () async {
+          RecordDTO record = RecordDTO(
+              day: DateTime.now(),
+              email: user.email,
+              type: button ? "Entrance" : "Exit");
+
+          await FirebaseFirestore.instance
+              .collection("Offices")
+              .doc(id)
+              .collection("Records")
+              .doc()
+              .set(record.toJson());
+
           setState(() {
             button = !button;
           });

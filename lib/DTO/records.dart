@@ -1,18 +1,18 @@
 class RecordDTO {
   final DateTime day;
-  final String name;
+  final String email;
   final String type;
 
   const RecordDTO({
     required this.day,
-    required this.name,
+    required this.email,
     required this.type,
   });
 
   toJson() {
     return {
       "Day": day,
-      "Name": name,
+      "Email": email,
       "Type": type,
     };
   }
