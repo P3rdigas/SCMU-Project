@@ -7,6 +7,7 @@ class OfficeDTO {
   final bool isHeaterOn;
   final int temperature;
   final List<dynamic> employees;
+  final List<dynamic> employeesInRoom;
 
   const OfficeDTO({
     required this.owner,
@@ -17,6 +18,7 @@ class OfficeDTO {
     required this.isHeaterOn,
     required this.temperature,
     required this.employees,
+    required this.employeesInRoom,
   });
 
   toJson() {
@@ -29,6 +31,7 @@ class OfficeDTO {
       "Heater": isHeaterOn,
       "Temperature": temperature,
       "Employees": employees,
+      "EmployeesInRoom": employeesInRoom,
     };
   }
 }

@@ -121,15 +121,17 @@ class _SignUpState extends State<HomeOwner> {
                                           for (Map<String, dynamic> data
                                               in snapshot.data!) {
                                             final officeDTO = OfficeDTO(
-                                                owner: data["Owner"],
-                                                name: data["Name"],
-                                                blind: data["Blind"],
-                                                isLightsOn: data["Lights"],
-                                                luminosity: data["Luminosity"],
-                                                isHeaterOn: data["Heater"],
-                                                temperature:
-                                                    data["Temperature"],
-                                                employees: data["Employees"]);
+                                              owner: data["Owner"],
+                                              name: data["Name"],
+                                              blind: data["Blind"],
+                                              isLightsOn: data["Lights"],
+                                              luminosity: data["Luminosity"],
+                                              isHeaterOn: data["Heater"],
+                                              temperature: data["Temperature"],
+                                              employees: data["Employees"],
+                                              employeesInRoom:
+                                                  data["EmployeesInRoom"],
+                                            );
 
                                             officesItems.add(
                                                 office(data["ID"], officeDTO));
@@ -287,6 +289,19 @@ class _SignUpState extends State<HomeOwner> {
               .doc()
               .set(record.toJson());
 
+          List<dynamic> employeesInRoom = office.employeesInRoom;
+
+          if (button) {
+            employeesInRoom.add(user.email);
+          } else {
+            employeesInRoom.remove(user.email);
+          }
+
+          await FirebaseFirestore.instance
+              .collection("Offices")
+              .doc(id)
+              .update({"EmployeesInRoom": employeesInRoom});
+
           setState(() {
             button = !button;
           });
@@ -386,14 +401,16 @@ class _SignUpState extends State<HomeOwner> {
   Future<void> submit() async {
     if (officeNameController.text.trim().isNotEmpty) {
       final office = OfficeDTO(
-          owner: user.email,
-          name: officeNameController.text.trim(),
-          blind: 0,
-          isLightsOn: false,
-          luminosity: 0,
-          isHeaterOn: false,
-          temperature: 16,
-          employees: <String>[]);
+        owner: user.email,
+        name: officeNameController.text.trim(),
+        blind: 0,
+        isLightsOn: false,
+        luminosity: 0,
+        isHeaterOn: false,
+        temperature: 16,
+        employees: <String>[],
+        employeesInRoom: <String>[],
+      );
 
       await FirebaseFirestore.instance
           .collection("Offices")
