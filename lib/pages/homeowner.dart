@@ -40,7 +40,6 @@ class _SignUpState extends State<HomeOwner> {
   Future<List<dynamic>> officeData() async {
     List<dynamic> officesData = [];
 
-    Iterator<String> it = user.offices.iterator.current.keys.iterator;
 
     for (String officeId in user.offices) {
       await FirebaseFirestore.instance
@@ -103,56 +102,56 @@ class _SignUpState extends State<HomeOwner> {
                                   0),
                               child: user.offices.isEmpty
                                   ? Text(
-                                      user.kind == "Owner"
-                                          ? "No offices created"
-                                          : "You aren´t employee in any office",
-                                      //Font Roboto Semi Bold
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold))
+                                  user.kind == "Owner"
+                                      ? "No offices created"
+                                      : "You aren´t employee in any office",
+                                  //Font Roboto Semi Bold
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold))
                                   : FutureBuilder(
-                                      future: officeData(),
-                                      builder: (context, snapshot) {
-                                        if (!snapshot.hasData)
-                                          return Container();
+                                future: officeData(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData)
+                                    return Container();
 
-                                        List<Widget> officesItems = [];
+                                  List<Widget> officesItems = [];
 
-                                        if (snapshot.data!.isNotEmpty) {
-                                          for (Map<String, dynamic> data
-                                              in snapshot.data!) {
-                                            final officeDTO = OfficeDTO(
-                                              owner: data["Owner"],
-                                              name: data["Name"],
-                                              blind: data["Blind"],
-                                              isLightsOn: data["Lights"],
-                                              luminosity: data["Luminosity"],
-                                              isHeaterOn: data["Heater"],
-                                              temperature: data["Temperature"],
-                                              employees: data["Employees"],
-                                              employeesInRoom: data["EmployeesInRoom"],
-                                              heaterBoolAutomatic: data["automatic_Temperature"],
-                                              lightsBoolAutomatic: data["automatic_light"],
-                                              targetLuminosity: data["target_Luminosity"],
-                                              targetTemperature: data["target_Temperature"],
-                                            );
+                                  if (snapshot.data!.isNotEmpty) {
+                                    for (Map<String, dynamic> data
+                                    in snapshot.data!) {
+                                      final officeDTO = OfficeDTO(
+                                        owner: data["Owner"],
+                                        name: data["Name"],
+                                        blind: data["Blind"],
+                                        isLightsOn: data["Lights"],
+                                        luminosity: data["Luminosity"],
+                                        isHeaterOn: data["Heater"],
+                                        temperature: data["Temperature"],
+                                        employees: data["Employees"],
+                                        employeesInRoom: data["EmployeesInRoom"],
+                                        heaterBoolAutomatic: data["automatic_Temperature"],
+                                        lightsBoolAutomatic: data["automatic_light"],
+                                        targetLuminosity: data["target_Luminosity"],
+                                        targetTemperature: data["target_Temperature"],
+                                      );
 
-                                            officesItems.add(
-                                                office(data["ID"], officeDTO));
+                                      officesItems.add(
+                                          office(data["ID"], officeDTO));
 
-                                            var item = Container(
-                                              height: 30,
-                                            );
+                                      var item = Container(
+                                        height: 30,
+                                      );
 
-                                            officesItems.add(item);
-                                          }
-                                        }
-                                        return Column(
-                                          children: officesItems,
-                                        );
-                                      },
-                                    ))),
+                                      officesItems.add(item);
+                                    }
+                                  }
+                                  return Column(
+                                    children: officesItems,
+                                  );
+                                },
+                              ))),
                     ],
                   ),
                 ),
@@ -164,80 +163,80 @@ class _SignUpState extends State<HomeOwner> {
   }
 
   Widget office(String id, OfficeDTO office) {
-      return Container(
-          width: MediaQuery.of(context).size.width,
-          height: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: const Color(0xFFffffff),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 15.0, // soften the shadow
-                spreadRadius: 5.0, //extend the shadow
-                offset: Offset(
-                  5.0, // Move to right 5  horizontally
-                  5.0, // Move to bottom 5 Vertically
-                ),
-              )
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        height: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: const Color(0xFFffffff),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.grey,
+              blurRadius: 15.0, // soften the shadow
+              spreadRadius: 5.0, //extend the shadow
+              offset: Offset(
+                5.0, // Move to right 5  horizontally
+                5.0, // Move to bottom 5 Vertically
+              ),
+            )
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, MediaQuery.of(context).size.height * 0.02, 20, 0),
+          child: Column(
+            children: <Widget>[
+              ownerOrUser(id, office),
+              const SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      const Icon(CupertinoIcons.thermometer),
+                      Text(
+                        "${office.temperature.toString()}º",
+                        style: const TextStyle(
+                            color: Colors.lightBlue,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Inter",
+                            fontSize: 12),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Icon(CupertinoIcons.lightbulb),
+                      Text(
+                        "${office.luminosity.toString()}%",
+                        style: const TextStyle(
+                            color: Colors.lightBlue,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Inter",
+                            fontSize: 12),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                          height: 23,
+                          child:
+                          Image.asset("assets/icons/air-conditioner.png")),
+                      Text(office.isHeaterOn ? "ON" : "OFF",
+                          style: const TextStyle(
+                              color: Colors.lightBlue,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Inter",
+                              fontSize: 12))
+                    ],
+                  ),
+                  attendButton(id, office)
+                ],
+              ),
             ],
           ),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.02, 20, 0),
-            child: Column(
-              children: <Widget>[
-                ownerOrUser(id, office),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        const Icon(CupertinoIcons.thermometer),
-                        Text(
-                          "${office.temperature.toString()}º",
-                          style: const TextStyle(
-                              color: Colors.lightBlue,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Inter",
-                              fontSize: 12),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        const Icon(CupertinoIcons.lightbulb),
-                        Text(
-                          "${office.luminosity.toString()}%",
-                          style: const TextStyle(
-                              color: Colors.lightBlue,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Inter",
-                              fontSize: 12),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                            height: 23,
-                            child:
-                            Image.asset("assets/icons/air-conditioner.png")),
-                        Text(office.isHeaterOn ? "ON" : "OFF",
-                            style: const TextStyle(
-                                color: Colors.lightBlue,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Inter",
-                                fontSize: 12))
-                      ],
-                    ),
-                    attendButton(id, office)
-                  ],
-                ),
-              ],
-            ),
-          ));
+        ));
   }
 
   Widget ownerOrUser(String id, OfficeDTO office) {
@@ -299,68 +298,68 @@ class _SignUpState extends State<HomeOwner> {
   bool button = true;
 
   Widget attendButton(String id, OfficeDTO office) {
-      return GestureDetector(
-        onTap: () async {
-          RecordDTO record = RecordDTO(
-              day: DateTime.now(),
-              email: user.email,
-              type: button ? "Entrance" : "Exit");
+    return GestureDetector(
+      onTap: () async {
+        RecordDTO record = RecordDTO(
+            day: DateTime.now(),
+            email: user.email,
+            type: button ? "Entrance" : "Exit");
 
-          await FirebaseFirestore.instance
-              .collection("Offices")
-              .doc(id)
-              .collection("Records")
-              .doc()
-              .set(record.toJson());
+        await FirebaseFirestore.instance
+            .collection("Offices")
+            .doc(id)
+            .collection("Records")
+            .doc()
+            .set(record.toJson());
 
-          List<dynamic> employeesInRoom = office.employeesInRoom;
-          print(office.employeesInRoom);
+        List<dynamic> employeesInRoom = office.employeesInRoom;
+        print(office.employeesInRoom);
 
-          if (button && !employeesInRoom.contains(user.email)) {
-            employeesInRoom.add(user.email);
-          } else {
-            employeesInRoom.remove(user.email);
-          }
+        if (button && !employeesInRoom.contains(user.email)) {
+          employeesInRoom.add(user.email);
+        } else {
+          employeesInRoom.remove(user.email);
+        }
 
 
-          await FirebaseFirestore.instance
-              .collection("Offices")
-              .doc(id)
-              .update({"EmployeesInRoom": employeesInRoom});
+        await FirebaseFirestore.instance
+            .collection("Offices")
+            .doc(id)
+            .update({"EmployeesInRoom": employeesInRoom});
 
-          final docRef = await FirebaseFirestore.instance
-              .collection("Offices")
-              .doc(id).get().then(
-                  (DocumentSnapshot doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                bool temp = data["automatic_Temperature"];
-                bool light = data["automatic_light"];
-                calculateAverageTemperature(id, office, temp, light);
-              });
+        final docRef = await FirebaseFirestore.instance
+            .collection("Offices")
+            .doc(id).get().then(
+                (DocumentSnapshot doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              bool temp = data["automatic_Temperature"];
+              bool light = data["automatic_light"];
+              calculateAverageTemperature(id, office, temp, light);
+            });
 
-          setState(() {
-            button = !button;
-          });
-        },
-        child: Container(
-          width: 65,
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: button ? const Color(0xFF6CAD7C) : Colors.white,
-            border: button ? null : Border.all(color: Colors.red, width: 2),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            button ? "Attend" : "Leave",
-            style: TextStyle(
-              color: button ? Colors.white : Colors.red,
-              fontWeight: FontWeight.bold,
-              fontFamily: "Inter",
-            ),
+        setState(() {
+          button = !button;
+        });
+      },
+      child: Container(
+        width: 65,
+        height: 40,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: button ? const Color(0xFF6CAD7C) : Colors.white,
+          border: button ? null : Border.all(color: Colors.red, width: 2),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          button ? "Attend" : "Leave",
+          style: TextStyle(
+            color: button ? Colors.white : Colors.red,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Inter",
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget plusButton() {
@@ -396,36 +395,36 @@ class _SignUpState extends State<HomeOwner> {
   Future<String?> openCreateOfficeDialog() => showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-            title: const Text("Add an Office"),
-            content: TextField(
-              autofocus: true,
-              cursorColor: const Color(0xFF6CAD7C),
-              controller: officeNameController,
-              decoration: const InputDecoration(
-                hintText: "Office Name",
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF6CAD7C)),
-                ),
-              ),
+        title: const Text("Add an Office"),
+        content: TextField(
+          autofocus: true,
+          cursorColor: const Color(0xFF6CAD7C),
+          controller: officeNameController,
+          decoration: const InputDecoration(
+            hintText: "Office Name",
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF6CAD7C)),
             ),
-            actions: [
-              TextButton(
-                  onPressed: close,
-                  style: ButtonStyle(
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.green.shade100)),
-                  child: const Text("Close",
-                      style:
-                          TextStyle(color: Color(0xFF6CAD7C), fontSize: 15))),
-              TextButton(
-                  onPressed: submit,
-                  style: ButtonStyle(
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.green.shade100)),
-                  child: const Text("Create",
-                      style: TextStyle(color: Color(0xFF6CAD7C), fontSize: 15)))
-            ],
-          ));
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: close,
+              style: ButtonStyle(
+                  overlayColor:
+                  MaterialStateProperty.all(Colors.green.shade100)),
+              child: const Text("Close",
+                  style:
+                  TextStyle(color: Color(0xFF6CAD7C), fontSize: 15))),
+          TextButton(
+              onPressed: submit,
+              style: ButtonStyle(
+                  overlayColor:
+                  MaterialStateProperty.all(Colors.green.shade100)),
+              child: const Text("Create",
+                  style: TextStyle(color: Color(0xFF6CAD7C), fontSize: 15)))
+        ],
+      ));
 
   void close() {
     Navigator.of(context).pop();
