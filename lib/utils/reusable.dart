@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../DTO/office.dart';
 
 Image logoWidget(String imageName, color) {
   return Image.asset(imageName,
@@ -73,6 +76,49 @@ Container firebaseUIButton(BuildContext context, String title, Function onTap, d
       ),
     ),
   );
+}
+
+void calculateAverageTemperature(String id, OfficeDTO office, bool tempB, bool lightB) async {
+  List yau = office.employeesInRoom;
+  Iterator it = yau.iterator;
+  int nUsers = 0;
+  int tempTotal = 0;
+  int lightTotal = 0;
+  while(it.moveNext()) {
+    nUsers= nUsers +1;
+    String mail = it.current;
+    final docRef = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(mail).get().then(
+          (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        int temp = data["Temperature"];
+        int light = data["Luminosity"];
+        tempTotal = tempTotal +temp;
+        lightTotal = lightTotal + light;
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
+  int finalT = (tempTotal/nUsers).round();
+  int finalL = (lightTotal/nUsers).round();
+
+  if(tempB) {
+    await FirebaseFirestore.instance
+        .collection("Offices")
+        .doc(id)
+        .update({"target_Temperature": finalT});
+  }
+
+  if(lightB) {
+    await FirebaseFirestore.instance
+        .collection("Offices")
+        .doc(id)
+        .update({"target_Luminosity": finalL});
+  }
+
+
 }
 
 class CustomSliderThumbCircle extends SliderComponentShape {

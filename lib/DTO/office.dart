@@ -8,6 +8,10 @@ class OfficeDTO {
   final int temperature;
   final List<dynamic> employees;
   final List<dynamic> employeesInRoom;
+  final bool heaterBoolAutomatic;
+  final bool lightsBoolAutomatic;
+  final int targetLuminosity;
+  final int targetTemperature;
 
   const OfficeDTO({
     required this.owner,
@@ -19,6 +23,10 @@ class OfficeDTO {
     required this.temperature,
     required this.employees,
     required this.employeesInRoom,
+    required this.heaterBoolAutomatic,
+    required this.lightsBoolAutomatic,
+    required this.targetLuminosity,
+    required this.targetTemperature,
   });
 
   toJson() {
@@ -32,6 +40,10 @@ class OfficeDTO {
       "Temperature": temperature,
       "Employees": employees,
       "EmployeesInRoom": employeesInRoom,
+      "automatic_Temperature": heaterBoolAutomatic,
+      "automatic_light": lightsBoolAutomatic,
+      "target_Luminosity": targetLuminosity,
+      "target_Temperature": targetTemperature,
     };
   }
 }

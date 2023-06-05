@@ -50,8 +50,8 @@ class _SignUpState extends State<ConfigOffice> {
 
     lightBool = office.isLightsOn;
     heaterBool = office.isHeaterOn;
-    lightBoolAutomatic = true;
-    heaterBoolAutomatic = true;
+    lightBoolAutomatic = office.lightsBoolAutomatic;
+    heaterBoolAutomatic = office.heaterBoolAutomatic;
     _lightV = office.luminosity.toDouble();
     _heaterV = office.temperature.toDouble();
     _rollerV = office.blind.toDouble();
@@ -714,13 +714,16 @@ class _SignUpState extends State<ConfigOffice> {
                 Color(0xFF6CAD7C)),
             onChanged: (bool value) async {
               setState(() {
+                if(!value) {
+                  calculateAverageTemperature(id, office, heaterBoolAutomatic, lightBoolAutomatic);
+                }
                 lightBoolAutomatic = value;
               });
 
               await FirebaseFirestore.instance
                   .collection("Offices")
                   .doc(id)
-                  .update({"Heater": value});
+                  .update({"automatic_light": value});
             }),
 
         automaticLights(),
@@ -729,7 +732,7 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   Widget automaticLights() {
-    if(lightBoolAutomatic) {
+    if(!lightBoolAutomatic) {
       return SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: const Color(0xFF6CAD7C),
@@ -752,7 +755,7 @@ class _SignUpState extends State<ConfigOffice> {
                       await FirebaseFirestore.instance
                           .collection("Offices")
                           .doc(id)
-                          .update({"Luminosity": value.round()});
+                          .update({"target_Luminosity": value.round()});
                     },
                     min: 0,
                     max: 100,
@@ -796,13 +799,16 @@ class _SignUpState extends State<ConfigOffice> {
                 Color(0xFF6CAD7C)),
             onChanged: (bool value) async {
               setState(() {
+                if(!value) {
+                  calculateAverageTemperature(id, office, heaterBoolAutomatic, lightBoolAutomatic);
+                }
                 heaterBoolAutomatic = value;
               });
 
               await FirebaseFirestore.instance
                   .collection("Offices")
                   .doc(id)
-                  .update({"Heater": value});
+                  .update({"automatic_Temperature": value});
             }),
         automaticHeater(),
       ],
@@ -810,7 +816,7 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   Widget automaticHeater() {
-    if(heaterBoolAutomatic) {
+    if(!heaterBoolAutomatic) {
       return SliderTheme(
         data: SliderTheme.of(context).copyWith(
           activeTrackColor: const Color(0xFF6CAD7C),
@@ -823,20 +829,20 @@ class _SignUpState extends State<ConfigOffice> {
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.75,
           child: Slider(
-            value: _lightV,
-            label: "${_lightV.round()}%",
+            value: _heaterV,
+            label: "${_lightV.round()}ºC",
             onChanged: (value) async {
               setState(() {
-                _lightV = value;
+                _heaterV = value;
               });
 
               await FirebaseFirestore.instance
                   .collection("Offices")
                   .doc(id)
-                  .update({"Luminosity": value.round()});
+                  .update({"target_Temperature": value.round()});
             },
-            min: 0,
-            max: 100,
+            min: 16,
+            max: 30,
           ),
         ),
       );

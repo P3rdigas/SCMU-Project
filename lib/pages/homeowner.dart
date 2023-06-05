@@ -6,6 +6,7 @@ import 'package:app/utils/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../utils/reusable.dart';
 
 class HomeOwner extends StatefulWidget {
   const HomeOwner({Key? key, required this.user}) : super(key: key);
@@ -24,7 +25,6 @@ class _SignUpState extends State<HomeOwner> {
   @override
   void initState() {
     super.initState();
-
     officeNameController = TextEditingController();
   }
 
@@ -39,6 +39,8 @@ class _SignUpState extends State<HomeOwner> {
 
   Future<List<dynamic>> officeData() async {
     List<dynamic> officesData = [];
+
+    Iterator<String> it = user.offices.iterator.current.keys.iterator;
 
     for (String officeId in user.offices) {
       await FirebaseFirestore.instance
@@ -129,8 +131,11 @@ class _SignUpState extends State<HomeOwner> {
                                               isHeaterOn: data["Heater"],
                                               temperature: data["Temperature"],
                                               employees: data["Employees"],
-                                              employeesInRoom:
-                                                  data["EmployeesInRoom"],
+                                              employeesInRoom: data["EmployeesInRoom"],
+                                              heaterBoolAutomatic: data["automatic_Temperature"],
+                                              lightsBoolAutomatic: data["automatic_light"],
+                                              targetLuminosity: data["target_Luminosity"],
+                                              targetTemperature: data["target_Temperature"],
                                             );
 
                                             officesItems.add(
@@ -159,122 +164,141 @@ class _SignUpState extends State<HomeOwner> {
   }
 
   Widget office(String id, OfficeDTO office) {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: 150,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: const Color(0xFFffffff),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 15.0, // soften the shadow
-              spreadRadius: 5.0, //extend the shadow
-              offset: Offset(
-                5.0, // Move to right 5  horizontally
-                5.0, // Move to bottom 5 Vertically
-              ),
-            )
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-              20, MediaQuery.of(context).size.height * 0.02, 20, 0),
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                      height: 50,
-                      child: Image.asset("assets/icons/office.png")),
-                  const SizedBox(width: 10),
-                  Text(office.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Inter",
-                          fontSize: 15)),
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      const Icon(CupertinoIcons.thermometer),
-                      Text(
-                        "${office.temperature.toString()}º",
-                        style: const TextStyle(
-                            color: Colors.lightBlue,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Inter",
-                            fontSize: 12),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(CupertinoIcons.lightbulb),
-                      Text(
-                        "${office.luminosity.toString()}%",
-                        style: const TextStyle(
-                            color: Colors.lightBlue,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Inter",
-                            fontSize: 12),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      SizedBox(
-                          height: 23,
-                          child:
-                              Image.asset("assets/icons/air-conditioner.png")),
-                      Text(office.isHeaterOn ? "ON" : "OFF",
+      return Container(
+          width: MediaQuery.of(context).size.width,
+          height: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: const Color(0xFFffffff),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.grey,
+                blurRadius: 15.0, // soften the shadow
+                spreadRadius: 5.0, //extend the shadow
+                offset: Offset(
+                  5.0, // Move to right 5  horizontally
+                  5.0, // Move to bottom 5 Vertically
+                ),
+              )
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+                20, MediaQuery.of(context).size.height * 0.02, 20, 0),
+            child: Column(
+              children: <Widget>[
+                ownerOrUser(id, office),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        const Icon(CupertinoIcons.thermometer),
+                        Text(
+                          "${office.temperature.toString()}º",
                           style: const TextStyle(
                               color: Colors.lightBlue,
                               fontWeight: FontWeight.bold,
                               fontFamily: "Inter",
-                              fontSize: 12))
-                    ],
-                  ),
-                  configOrAttend(id, office)
-                ],
-              ),
-            ],
-          ),
-        ));
+                              fontSize: 12),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Icon(CupertinoIcons.lightbulb),
+                        Text(
+                          "${office.luminosity.toString()}%",
+                          style: const TextStyle(
+                              color: Colors.lightBlue,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Inter",
+                              fontSize: 12),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        SizedBox(
+                            height: 23,
+                            child:
+                            Image.asset("assets/icons/air-conditioner.png")),
+                        Text(office.isHeaterOn ? "ON" : "OFF",
+                            style: const TextStyle(
+                                color: Colors.lightBlue,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Inter",
+                                fontSize: 12))
+                      ],
+                    ),
+                    attendButton(id, office)
+                  ],
+                ),
+              ],
+            ),
+          ));
   }
 
+  Widget ownerOrUser(String id, OfficeDTO office) {
+    if(user.kind == "Owner") {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+              children: <Widget>[
+                SizedBox(
+                    height: 50,
+                    child: Image.asset("assets/icons/office.png")),
+                const SizedBox(width: 10),
+                Text(office.name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Inter",
+                        fontSize: 15))]),
+          GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ConfigOffice(id: id, office: office, user: user)));
+              },
+              child: Container(
+                  width: 65,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color(0xFF6CAD7C),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    "Config",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Inter"),
+                  )))
+        ],
+      );
+    }
+    else {
+      return Row(
+          children: <Widget>[
+            SizedBox(
+                height: 50,
+                child: Image.asset("assets/icons/office.png")),
+            const SizedBox(width: 10),
+            Text(office.name,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                    fontSize: 15))]);
+    }
+  }
   bool button = true;
 
-  Widget configOrAttend(String id, OfficeDTO office) {
-    if (user.kind == "Owner") {
-      return GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ConfigOffice(id: id, office: office, user: user)));
-          },
-          child: Container(
-              width: 65,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: const Color(0xFF6CAD7C),
-              ),
-              alignment: Alignment.center,
-              child: const Text(
-                "Config",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter"),
-              )));
-    } else {
+  Widget attendButton(String id, OfficeDTO office) {
       return GestureDetector(
         onTap: () async {
           RecordDTO record = RecordDTO(
@@ -290,17 +314,29 @@ class _SignUpState extends State<HomeOwner> {
               .set(record.toJson());
 
           List<dynamic> employeesInRoom = office.employeesInRoom;
+          print(office.employeesInRoom);
 
-          if (button) {
+          if (button && !employeesInRoom.contains(user.email)) {
             employeesInRoom.add(user.email);
           } else {
             employeesInRoom.remove(user.email);
           }
 
+
           await FirebaseFirestore.instance
               .collection("Offices")
               .doc(id)
               .update({"EmployeesInRoom": employeesInRoom});
+
+          final docRef = await FirebaseFirestore.instance
+              .collection("Offices")
+              .doc(id).get().then(
+                  (DocumentSnapshot doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                bool temp = data["automatic_Temperature"];
+                bool light = data["automatic_light"];
+                calculateAverageTemperature(id, office, temp, light);
+              });
 
           setState(() {
             button = !button;
@@ -325,7 +361,6 @@ class _SignUpState extends State<HomeOwner> {
           ),
         ),
       );
-    }
   }
 
   Widget plusButton() {
@@ -410,6 +445,10 @@ class _SignUpState extends State<HomeOwner> {
         temperature: 16,
         employees: <String>[],
         employeesInRoom: <String>[],
+        heaterBoolAutomatic: true,
+        lightsBoolAutomatic: true,
+        targetLuminosity: 100,
+        targetTemperature: 20,
       );
 
       await FirebaseFirestore.instance
