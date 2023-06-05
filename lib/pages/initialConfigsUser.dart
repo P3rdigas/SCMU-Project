@@ -351,7 +351,9 @@ class _InitialConfigsUser extends State<InitialConfigsUser> {
                               luminosity: _luminosity.round(),
                               name: name,
                               temperature: _temperature.round(),
-                              offices: <Map<String, bool>>[]);
+                              offices: <dynamic>[],
+                              inOffice: <dynamic>[],
+                          );
                           await FirebaseFirestore.instance
                               .collection("Users")
                               .doc(email)

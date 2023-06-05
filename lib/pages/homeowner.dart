@@ -135,10 +135,47 @@ class _SignUpState extends State<HomeOwner> {
                                         lightsBoolAutomatic: data["automatic_light"],
                                         targetLuminosity: data["target_Luminosity"],
                                         targetTemperature: data["target_Temperature"],
+                                        isEmpty: data["IsEmpty"]
                                       );
 
+                                      //get do index do office
+                                      bool attend=true;
+                                      int counter = 0;
+
+                                      /*FirebaseFirestore.instance
+                                          .collection("Users")
+                                          .doc(user.email).get().then(
+                                              (DocumentSnapshot doc) async {
+                                            final data = doc.data() as Map<String, dynamic>;
+                                            List listBool = data["InOffice"];
+                                            List listOffices = data["Offices"];
+
+                                            Iterator it = listOffices.iterator;
+                                            Iterator itBool = listBool.iterator;
+
+                                            while(it.moveNext()) {
+                                              print(it.current);
+                                              itBool.moveNext();
+                                              if(it.current == data["ID"]) {
+                                                attend = !itBool.current;
+                                                List<dynamic> userInOffices = user.inOffice;
+                                                userInOffices[counter] = !itBool.current;
+                                                await FirebaseFirestore.instance
+                                                    .collection("Users")
+                                                    .doc(user.email)
+                                                    .update({"InOffice": userInOffices});
+                                              }
+                                              counter ++;
+                                            }
+                                            print("+++++++++");
+                                            print(attend);print(counter);print("+++++++++++++");
+                                          });
+                                      //get do bool naqule index
+                                      */
+
+
                                       officesItems.add(
-                                          office(data["ID"], officeDTO));
+                                          office(data["ID"], officeDTO, attend, counter));
 
                                       var item = Container(
                                         height: 30,
@@ -162,7 +199,7 @@ class _SignUpState extends State<HomeOwner> {
         ));
   }
 
-  Widget office(String id, OfficeDTO office) {
+  Widget office(String id, OfficeDTO office, bool attend, int counter) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 150,
@@ -231,7 +268,7 @@ class _SignUpState extends State<HomeOwner> {
                               fontSize: 12))
                     ],
                   ),
-                  attendButton(id, office)
+                  attendButton(id, office, attend, counter)
                 ],
               ),
             ],
@@ -297,7 +334,8 @@ class _SignUpState extends State<HomeOwner> {
   }
   bool button = true;
 
-  Widget attendButton(String id, OfficeDTO office) {
+  Widget attendButton(String id, OfficeDTO office, bool attend, int counter) {
+    bool boolToUse = attend;
     return GestureDetector(
       onTap: () async {
         RecordDTO record = RecordDTO(
@@ -313,7 +351,8 @@ class _SignUpState extends State<HomeOwner> {
             .set(record.toJson());
 
         List<dynamic> employeesInRoom = office.employeesInRoom;
-        print(office.employeesInRoom);
+
+        bool lenght1 = employeesInRoom.length == 0;
 
         if (button && !employeesInRoom.contains(user.email)) {
           employeesInRoom.add(user.email);
@@ -321,11 +360,22 @@ class _SignUpState extends State<HomeOwner> {
           employeesInRoom.remove(user.email);
         }
 
+        bool lenght2 = employeesInRoom.length == 1;
 
-        await FirebaseFirestore.instance
-            .collection("Offices")
-            .doc(id)
-            .update({"EmployeesInRoom": employeesInRoom});
+        if(employeesInRoom.isEmpty) {
+          await FirebaseFirestore.instance
+              .collection("Offices")
+              .doc(id)
+              .update({"EmployeesInRoom": employeesInRoom, "Blind":0});
+        }
+
+        if(lenght1 && lenght2) {
+          await FirebaseFirestore.instance
+              .collection("Offices")
+              .doc(id)
+              .update({"EmployeesInRoom": employeesInRoom, "Blind":100});
+        }
+
 
         final docRef = await FirebaseFirestore.instance
             .collection("Offices")
@@ -336,9 +386,19 @@ class _SignUpState extends State<HomeOwner> {
               bool light = data["automatic_light"];
               calculateAverageTemperature(id, office, temp, light);
             });
+        List<dynamic> userInOffices = user.inOffice;
+        print("----------");
+        print(boolToUse);
+        print(counter);
+        print("----------");
+        userInOffices[counter] = boolToUse;
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(user.email)
+            .update({"InOffice": userInOffices});
 
         setState(() {
-          button = !button;
+          boolToUse = !boolToUse;
         });
       },
       child: Container(
@@ -346,14 +406,14 @@ class _SignUpState extends State<HomeOwner> {
         height: 40,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: button ? const Color(0xFF6CAD7C) : Colors.white,
-          border: button ? null : Border.all(color: Colors.red, width: 2),
+          color: boolToUse ? const Color(0xFF6CAD7C) : Colors.white,
+          border: boolToUse ? null : Border.all(color: Colors.red, width: 2),
         ),
         alignment: Alignment.center,
         child: Text(
-          button ? "Attend" : "Leave",
+          boolToUse ? "Attend" : "Leave",
           style: TextStyle(
-            color: button ? Colors.white : Colors.red,
+            color: boolToUse ? Colors.white : Colors.red,
             fontWeight: FontWeight.bold,
             fontFamily: "Inter",
           ),
@@ -448,6 +508,7 @@ class _SignUpState extends State<HomeOwner> {
         lightsBoolAutomatic: true,
         targetLuminosity: 100,
         targetTemperature: 20,
+        isEmpty: true,
       );
 
       await FirebaseFirestore.instance
@@ -460,10 +521,15 @@ class _SignUpState extends State<HomeOwner> {
         List<dynamic> userOffices = user.offices;
         userOffices.add(value.id);
 
+        List<dynamic> userInOffices = user.inOffice;
+        userInOffices.add(false);
+
+
+
         await FirebaseFirestore.instance
             .collection("Users")
             .doc(user.email)
-            .update({"Offices": userOffices}).then((value) {
+            .update({"Offices": userOffices, "InOffice": userInOffices}).then((value) {
           Navigator.of(context).pop();
 
           officeNameController.clear();

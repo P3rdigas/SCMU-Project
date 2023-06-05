@@ -12,6 +12,7 @@ class OfficeDTO {
   final bool lightsBoolAutomatic;
   final int targetLuminosity;
   final int targetTemperature;
+  final bool isEmpty;
 
   const OfficeDTO({
     required this.owner,
@@ -27,6 +28,7 @@ class OfficeDTO {
     required this.lightsBoolAutomatic,
     required this.targetLuminosity,
     required this.targetTemperature,
+    required this.isEmpty,
   });
 
   toJson() {
@@ -44,6 +46,7 @@ class OfficeDTO {
       "automatic_light": lightsBoolAutomatic,
       "target_Luminosity": targetLuminosity,
       "target_Temperature": targetTemperature,
+      "IsEmpty": isEmpty,
     };
   }
 }

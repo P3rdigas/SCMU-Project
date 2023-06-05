@@ -141,54 +141,54 @@ class _SignUpState extends State<ConfigOffice> {
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
                 body: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-                  child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                          20, MediaQuery.of(context).size.height * 0.08, 30, 0),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: SingleChildScrollView(
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              20, MediaQuery.of(context).size.height * 0.08, 30, 0),
+                          child: Column(
                             children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              OwnerSetUp(user: user)));
-                                },
-                                child: const Icon(Icons.arrow_back_ios_new),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  OwnerSetUp(user: user)));
+                                    },
+                                    child: const Icon(Icons.arrow_back_ios_new),
+                                  ),
+                                  Align(
+                                    child: Text(office.name,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "Inter",
+                                            fontSize: 25)),
+                                  ),
+                                  Container()
+                                ],
                               ),
-                              Align(
-                                child: Text(office.name,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: "Inter",
-                                        fontSize: 25)),
-                              ),
-                              Container()
+                              const SizedBox(height: 40),
+                              Saving(),
+                              const SizedBox(height: 40),
+                              Lights("assets/icons/light-bulb.png",
+                                  "Light Intensity", "LIGHTS OFF"),
+                              const SizedBox(height: 40),
+                              Heater("assets/icons/air-source-heat-pump.png",
+                                  "Heater", "HEATER OFF"),
+                              const SizedBox(height: 40),
+                              Roller("assets/icons/up-and-down.png", "Roller Blind",
+                                  "HEATER OFF"),
+                              const SizedBox(height: 40),
+                              expand(),
+                              const SizedBox(height: 40),
                             ],
-                          ),
-                          const SizedBox(height: 40),
-                          Saving(),
-                          const SizedBox(height: 40),
-                          Lights("assets/icons/light-bulb.png",
-                              "Light Intensity", "LIGHTS OFF"),
-                          const SizedBox(height: 40),
-                          Heater("assets/icons/air-source-heat-pump.png",
-                              "Heater", "HEATER OFF"),
-                          const SizedBox(height: 40),
-                          Roller("assets/icons/up-and-down.png", "Roller Blind",
-                              "HEATER OFF"),
-                          const SizedBox(height: 40),
-                          expand(),
-                          const SizedBox(height: 40),
-                        ],
-                      ))),
-            ))));
+                          ))),
+                ))));
   }
 
   Widget expand() {
@@ -242,20 +242,20 @@ class _SignUpState extends State<ConfigOffice> {
         const SizedBox(height: 30),
         reusableTextField(
             "Email", Icons.email_outlined, false, _emailTextController,
-            (value) {
-          if (value == null || value.isEmpty) {
-            return "Please enter your email address";
-          } else if (!EmailValidator.validate(value)) {
-            return "Please enter a valid email.";
-          }
-          return null;
-        }),
+                (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter your email address";
+              } else if (!EmailValidator.validate(value)) {
+                return "Please enter a valid email.";
+              }
+              return null;
+            }),
         const SizedBox(height: 30),
         firebaseUIButton(context, "Add User", () async {
           String email = _emailTextController.text.trim();
 
           var docRef =
-              FirebaseFirestore.instance.collection("Users").doc(email);
+          FirebaseFirestore.instance.collection("Users").doc(email);
 
           docRef.get().then((doc) async {
             if (doc.exists) {
@@ -292,8 +292,6 @@ class _SignUpState extends State<ConfigOffice> {
   Widget calendarDiv() {
     return Column(
       children: [
-        Text(_selectedDay.toString()),
-        Text(_focusedDay.toString()),
         TableCalendar(
           firstDay: DateTime.utc(2010, 10, 16),
           lastDay: DateTime.utc(2030, 3, 14),
@@ -699,7 +697,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights_ON() {
     return Column(
       children: [
-        Text("Switch ON to control the lights:",
+        Text("Switch OFF to control the lights:",
             style: const TextStyle(
               color: Color(0xFF6CAD7C),
               fontWeight: FontWeight.bold,
@@ -734,33 +732,33 @@ class _SignUpState extends State<ConfigOffice> {
   Widget automaticLights() {
     if(!lightBoolAutomatic) {
       return SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: const Color(0xFF6CAD7C),
-                  inactiveTrackColor: Colors.green.shade100,
-                  trackShape: const RoundedRectSliderTrackShape(),
-                  thumbColor: const Color(0xFF6CAD7C),
-                  valueIndicatorColor: const Color(0xFF6CAD7C),
-                  showValueIndicator: ShowValueIndicator.always,
-                ),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.75,
-                  child: Slider(
-                    value: _lightV,
-                    label: "${_lightV.round()}%",
-                    onChanged: (value) async {
-                      setState(() {
-                        _lightV = value;
-                      });
+        data: SliderTheme.of(context).copyWith(
+          activeTrackColor: const Color(0xFF6CAD7C),
+          inactiveTrackColor: Colors.green.shade100,
+          trackShape: const RoundedRectSliderTrackShape(),
+          thumbColor: const Color(0xFF6CAD7C),
+          valueIndicatorColor: const Color(0xFF6CAD7C),
+          showValueIndicator: ShowValueIndicator.always,
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.75,
+          child: Slider(
+            value: _lightV,
+            label: "${_lightV.round()}%",
+            onChanged: (value) async {
+              setState(() {
+                _lightV = value;
+              });
 
-                      await FirebaseFirestore.instance
-                          .collection("Offices")
-                          .doc(id)
-                          .update({"target_Luminosity": value.round()});
-                    },
-                    min: 0,
-                    max: 100,
-                  ),
-                ),
+              await FirebaseFirestore.instance
+                  .collection("Offices")
+                  .doc(id)
+                  .update({"target_Luminosity": value.round()});
+            },
+            min: 0,
+            max: 100,
+          ),
+        ),
       );
     }
     else {
@@ -782,7 +780,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Heater_ON() {
     return Column(
       children: [
-        Text("Switch ON to control the heater:",
+        Text("Switch OFF to control the heater:",
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Color(0xFF6CAD7C),
@@ -911,8 +909,8 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   final MaterialStateProperty<Color?> overlayColor =
-      MaterialStateProperty.resolveWith<Color?>(
-    (Set<MaterialState> states) {
+  MaterialStateProperty.resolveWith<Color?>(
+        (Set<MaterialState> states) {
       // Material color when switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade50;
@@ -929,8 +927,8 @@ class _SignUpState extends State<ConfigOffice> {
   );
 
   final MaterialStateProperty<Color?> trackColorGreen =
-      MaterialStateProperty.resolveWith<Color?>(
-    (Set<MaterialState> states) {
+  MaterialStateProperty.resolveWith<Color?>(
+        (Set<MaterialState> states) {
       // Track color when the switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade100;

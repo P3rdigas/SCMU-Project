@@ -119,7 +119,9 @@ class _SignInState extends State<SignIn> {
                                     luminosity: data["Luminosity"],
                                     name: data["Name"],
                                     temperature: data["Temperature"],
-                                    offices: data["Offices"]);
+                                    offices: data["Offices"],
+                                    inOffice: data["InOffice"],
+                                    );
 
                                 Navigator.push(
                                     context,
