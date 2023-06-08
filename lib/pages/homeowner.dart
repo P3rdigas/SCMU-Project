@@ -40,7 +40,6 @@ class _SignUpState extends State<HomeOwner> {
   Future<List<dynamic>> officeData() async {
     List<dynamic> officesData = [];
 
-
     for (String officeId in user.offices) {
       await FirebaseFirestore.instance
           .collection("Offices")
@@ -52,7 +51,6 @@ class _SignUpState extends State<HomeOwner> {
         officesData.add(data);
       });
     }
-
     return officesData;
   }
 
@@ -102,93 +100,157 @@ class _SignUpState extends State<HomeOwner> {
                                   0),
                               child: user.offices.isEmpty
                                   ? Text(
-                                  user.kind == "Owner"
-                                      ? "No offices created"
-                                      : "You aren´t employee in any office",
-                                  //Font Roboto Semi Bold
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold))
-                                  : FutureBuilder(
-                                future: officeData(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData)
-                                    return Container();
+                                      user.kind == "Owner"
+                                          ? "No offices created"
+                                          : "You aren´t employee in any office",
+                                      //Font Roboto Semi Bold
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold))
+                                  : StreamBuilder(
+                                      stream: FirebaseFirestore.instance.collection("Offices").snapshots(),
+                                      //initialData: officeData(),
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return Container();
+                                        }
 
-                                  List<Widget> officesItems = [];
+                                        List<QueryDocumentSnapshot<Map<String, dynamic>>> officesData = [];
+                                        List<Widget> officesItems = [];
 
-                                  if (snapshot.data!.isNotEmpty) {
-                                    for (Map<String, dynamic> data
-                                    in snapshot.data!) {
-                                      final officeDTO = OfficeDTO(
-                                        owner: data["Owner"],
-                                        name: data["Name"],
-                                        blind: data["Blind"],
-                                        isLightsOn: data["Lights"],
-                                        luminosity: data["Luminosity"],
-                                        isHeaterOn: data["Heater"],
-                                        temperature: data["Temperature"],
-                                        employees: data["Employees"],
-                                        employeesInRoom: data["EmployeesInRoom"],
-                                        heaterBoolAutomatic: data["automatic_Temperature"],
-                                        lightsBoolAutomatic: data["automatic_light"],
-                                        targetLuminosity: data["target_Luminosity"],
-                                        targetTemperature: data["target_Temperature"],
-                                        isEmpty: data["IsEmpty"]
+                                        final offices = snapshot.data?.docs.reversed.toList();
+
+                                        for(QueryDocumentSnapshot<Map<String, dynamic>> data in offices!) {
+                                          if(user.offices.contains(data.id)) {
+                                            officesData.add(data);
+                                          }
+                                        }
+
+                                        for(QueryDocumentSnapshot<Map<String, dynamic>> d in officesData!) {
+                                          String id = d.id;
+                                          Map<String, dynamic> data = d.data();
+                                          final officeDTO = OfficeDTO(
+                                            owner: data["Owner"],
+                                            name: data["Name"],
+                                            blind: data["Blind"],
+                                            isLightsOn: data["Lights"],
+                                            luminosity: data["Luminosity"],
+                                            isHeaterOn: data["Heater"],
+                                            temperature: data["Temperature"],
+                                            employees: data["Employees"],
+                                            employeesInRoom: data["EmployeesInRoom"],
+                                            heaterBoolAutomatic: data["automatic_Temperature"],
+                                            lightsBoolAutomatic: data["automatic_light"],
+                                            targetLuminosity: data["target_Luminosity"],
+                                            targetTemperature: data["target_Temperature"],
+                                            isEmpty: data["IsEmpty"],
+                                            inOffice: data["InOffice"],
+                                          );
+
+                                          int index = officeDTO.employees.indexOf(user.email);
+                                          bool value = officeDTO.inOffice.elementAt(index);
+
+                                          officesItems.add(
+                                              office(id, officeDTO, value, index));
+
+                                          var item = Container(
+                                            height: 30,
+                                          );
+
+                                          officesItems.add(item);
+                                        }
+
+                                        return Column(
+                                          children: officesItems,
+                                        );
+
+                                        // if (snapshot.data!.isNotEmpty) {
+                                        //   for (Map<String, dynamic> data
+                                        //   in snapshot.data!) {
+                                        //     final officeDTO = OfficeDTO(
+                                        //       owner: data["Owner"],
+                                        //       name: data["Name"],
+                                        //       blind: data["Blind"],
+                                        //       isLightsOn: data["Lights"],
+                                        //       luminosity: data["Luminosity"],
+                                        //       isHeaterOn: data["Heater"],
+                                        //       temperature: data["Temperature"],
+                                        //       employees: data["Employees"],
+                                        //       employeesInRoom: data["EmployeesInRoom"],
+                                        //       heaterBoolAutomatic: data["automatic_Temperature"],
+                                        //       lightsBoolAutomatic: data["automatic_light"],
+                                        //       targetLuminosity: data["target_Luminosity"],
+                                        //       targetTemperature: data["target_Temperature"],
+                                        //       isEmpty: data["IsEmpty"],
+                                        //       inOffice: data["InOffice"],
+                                        //     );
+                                        //
+                                        //     int index = officeDTO.employees.indexOf(user.email);
+                                        //     bool value = officeDTO.inOffice.elementAt(index);
+                                        //
+                                        //     officesItems.add(
+                                        //         office(data["ID"], officeDTO, value, index));
+                                        //
+                                        //     var item = Container(
+                                        //       height: 30,
+                                        //     );
+                                        //
+                                        //     officesItems.add(item);
+                                        //   }
+                                        // }
+                                        // return Column(
+                                        //   children: officesItems,
+                                        // );
+                                      }, /*FutureBuilder(
+                                    future: officeData(),
+                                    builder: (context, snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return Container();
+                                      }
+
+                                      List<Widget> officesItems = [];
+
+                                      if (snapshot.data!.isNotEmpty) {
+                                        for (Map<String, dynamic> data
+                                        in snapshot.data!) {
+                                          final officeDTO = OfficeDTO(
+                                            owner: data["Owner"],
+                                            name: data["Name"],
+                                            blind: data["Blind"],
+                                            isLightsOn: data["Lights"],
+                                            luminosity: data["Luminosity"],
+                                            isHeaterOn: data["Heater"],
+                                            temperature: data["Temperature"],
+                                            employees: data["Employees"],
+                                            employeesInRoom: data["EmployeesInRoom"],
+                                            heaterBoolAutomatic: data["automatic_Temperature"],
+                                            lightsBoolAutomatic: data["automatic_light"],
+                                            targetLuminosity: data["target_Luminosity"],
+                                            targetTemperature: data["target_Temperature"],
+                                            isEmpty: data["IsEmpty"],
+                                            inOffice: data["InOffice"],
+                                          );
+
+                                          int index = officeDTO.employees.indexOf(user.email);
+                                          bool value = officeDTO.inOffice.elementAt(index);
+
+                                          officesItems.add(
+                                              office(data["ID"], officeDTO, value, index));
+
+                                          var item = Container(
+                                            height: 30,
+                                          );
+
+                                          officesItems.add(item);
+                                        }
+                                      }
+                                      return Column(
+                                        children: officesItems,
                                       );
-
-                                      //get do index do office
-                                      bool attend=true;
-                                      int counter = 0;
-
-                                      /*FirebaseFirestore.instance
-                                          .collection("Users")
-                                          .doc(user.email).get().then(
-                                              (DocumentSnapshot doc) async {
-                                            final data = doc.data() as Map<String, dynamic>;
-                                            List listBool = data["InOffice"];
-                                            List listOffices = data["Offices"];
-
-                                            Iterator it = listOffices.iterator;
-                                            Iterator itBool = listBool.iterator;
-
-                                            while(it.moveNext()) {
-                                              print(it.current);
-                                              itBool.moveNext();
-                                              if(it.current == data["ID"]) {
-                                                attend = !itBool.current;
-                                                List<dynamic> userInOffices = user.inOffice;
-                                                userInOffices[counter] = !itBool.current;
-                                                await FirebaseFirestore.instance
-                                                    .collection("Users")
-                                                    .doc(user.email)
-                                                    .update({"InOffice": userInOffices});
-                                              }
-                                              counter ++;
-                                            }
-                                            print("+++++++++");
-                                            print(attend);print(counter);print("+++++++++++++");
-                                          });
-                                      //get do bool naqule index
-                                      */
-
-
-                                      officesItems.add(
-                                          office(data["ID"], officeDTO, attend, counter));
-
-                                      var item = Container(
-                                        height: 30,
-                                      );
-
-                                      officesItems.add(item);
-                                    }
-                                  }
-                                  return Column(
-                                    children: officesItems,
-                                  );
-                                },
-                              ))),
+                                    },
+                                  ),*/
+                                    ))),
                     ],
                   ),
                 ),
@@ -259,7 +321,7 @@ class _SignUpState extends State<HomeOwner> {
                       SizedBox(
                           height: 23,
                           child:
-                          Image.asset("assets/icons/air-conditioner.png")),
+                              Image.asset("assets/icons/air-conditioner.png")),
                       Text(office.isHeaterOn ? "ON" : "OFF",
                           style: const TextStyle(
                               color: Colors.lightBlue,
@@ -277,21 +339,19 @@ class _SignUpState extends State<HomeOwner> {
   }
 
   Widget ownerOrUser(String id, OfficeDTO office) {
-    if(user.kind == "Owner") {
+    if (user.kind == "Owner") {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-              children: <Widget>[
-                SizedBox(
-                    height: 50,
-                    child: Image.asset("assets/icons/office.png")),
-                const SizedBox(width: 10),
-                Text(office.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "Inter",
-                        fontSize: 15))]),
+          Row(children: <Widget>[
+            SizedBox(height: 50, child: Image.asset("assets/icons/office.png")),
+            const SizedBox(width: 10),
+            Text(office.name,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                    fontSize: 15))
+          ]),
           GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -317,31 +377,24 @@ class _SignUpState extends State<HomeOwner> {
                   )))
         ],
       );
-    }
-    else {
-      return Row(
-          children: <Widget>[
-            SizedBox(
-                height: 50,
-                child: Image.asset("assets/icons/office.png")),
-            const SizedBox(width: 10),
-            Text(office.name,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter",
-                    fontSize: 15))]);
+    } else {
+      return Row(children: <Widget>[
+        SizedBox(height: 50, child: Image.asset("assets/icons/office.png")),
+        const SizedBox(width: 10),
+        Text(office.name,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, fontFamily: "Inter", fontSize: 15))
+      ]);
     }
   }
-  bool button = true;
 
   Widget attendButton(String id, OfficeDTO office, bool attend, int counter) {
-    bool boolToUse = attend;
     return GestureDetector(
       onTap: () async {
         RecordDTO record = RecordDTO(
             day: DateTime.now(),
             email: user.email,
-            type: button ? "Entrance" : "Exit");
+            type: attend ? "Exit" : "Entrance");
 
         await FirebaseFirestore.instance
             .collection("Offices")
@@ -354,7 +407,7 @@ class _SignUpState extends State<HomeOwner> {
 
         bool lenght1 = employeesInRoom.length == 0;
 
-        if (button && !employeesInRoom.contains(user.email)) {
+        if (!attend && !employeesInRoom.contains(user.email)) {
           employeesInRoom.add(user.email);
         } else {
           employeesInRoom.remove(user.email);
@@ -362,43 +415,40 @@ class _SignUpState extends State<HomeOwner> {
 
         bool lenght2 = employeesInRoom.length == 1;
 
-        if(employeesInRoom.isEmpty) {
+        if (employeesInRoom.isEmpty) {
           await FirebaseFirestore.instance
               .collection("Offices")
               .doc(id)
-              .update({"EmployeesInRoom": employeesInRoom, "Blind":0});
+              .update({"EmployeesInRoom": employeesInRoom, "Blind": 0});
         }
 
-        if(lenght1 && lenght2) {
+        if (lenght1 && lenght2) {
           await FirebaseFirestore.instance
               .collection("Offices")
               .doc(id)
-              .update({"EmployeesInRoom": employeesInRoom, "Blind":100});
+              .update({"EmployeesInRoom": employeesInRoom, "Blind": 100});
         }
 
+        office.inOffice[counter] = !office.inOffice.elementAt(counter);
+
+        await FirebaseFirestore.instance
+            .collection("Offices")
+            .doc(id)
+            .update({"InOffice": office.inOffice});
 
         final docRef = await FirebaseFirestore.instance
             .collection("Offices")
-            .doc(id).get().then(
-                (DocumentSnapshot doc) {
-              final data = doc.data() as Map<String, dynamic>;
-              bool temp = data["automatic_Temperature"];
-              bool light = data["automatic_light"];
-              calculateAverageTemperature(id, office, temp, light);
-            });
-        List<dynamic> userInOffices = user.inOffice;
-        print("----------");
-        print(boolToUse);
-        print(counter);
-        print("----------");
-        userInOffices[counter] = boolToUse;
-        await FirebaseFirestore.instance
-            .collection("Users")
-            .doc(user.email)
-            .update({"InOffice": userInOffices});
+            .doc(id)
+            .get()
+            .then((DocumentSnapshot doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          bool temp = data["automatic_Temperature"];
+          bool light = data["automatic_light"];
+          calculateAverageTemperature(id, office, temp, light);
+        });
 
         setState(() {
-          boolToUse = !boolToUse;
+          attend = !attend;
         });
       },
       child: Container(
@@ -406,14 +456,14 @@ class _SignUpState extends State<HomeOwner> {
         height: 40,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: boolToUse ? const Color(0xFF6CAD7C) : Colors.white,
-          border: boolToUse ? null : Border.all(color: Colors.red, width: 2),
+          color: attend ? Colors.white : const Color(0xFF6CAD7C),
+          border: attend ? Border.all(color: Colors.red, width: 2) : null,
         ),
         alignment: Alignment.center,
         child: Text(
-          boolToUse ? "Attend" : "Leave",
+          attend ? "Leave" : "Attend",
           style: TextStyle(
-            color: boolToUse ? Colors.white : Colors.red,
+            color: attend ? Colors.red : Colors.white,
             fontWeight: FontWeight.bold,
             fontFamily: "Inter",
           ),
@@ -455,36 +505,36 @@ class _SignUpState extends State<HomeOwner> {
   Future<String?> openCreateOfficeDialog() => showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Add an Office"),
-        content: TextField(
-          autofocus: true,
-          cursorColor: const Color(0xFF6CAD7C),
-          controller: officeNameController,
-          decoration: const InputDecoration(
-            hintText: "Office Name",
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF6CAD7C)),
+            title: const Text("Add an Office"),
+            content: TextField(
+              autofocus: true,
+              cursorColor: const Color(0xFF6CAD7C),
+              controller: officeNameController,
+              decoration: const InputDecoration(
+                hintText: "Office Name",
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF6CAD7C)),
+                ),
+              ),
             ),
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: close,
-              style: ButtonStyle(
-                  overlayColor:
-                  MaterialStateProperty.all(Colors.green.shade100)),
-              child: const Text("Close",
-                  style:
-                  TextStyle(color: Color(0xFF6CAD7C), fontSize: 15))),
-          TextButton(
-              onPressed: submit,
-              style: ButtonStyle(
-                  overlayColor:
-                  MaterialStateProperty.all(Colors.green.shade100)),
-              child: const Text("Create",
-                  style: TextStyle(color: Color(0xFF6CAD7C), fontSize: 15)))
-        ],
-      ));
+            actions: [
+              TextButton(
+                  onPressed: close,
+                  style: ButtonStyle(
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.green.shade100)),
+                  child: const Text("Close",
+                      style:
+                          TextStyle(color: Color(0xFF6CAD7C), fontSize: 15))),
+              TextButton(
+                  onPressed: submit,
+                  style: ButtonStyle(
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.green.shade100)),
+                  child: const Text("Create",
+                      style: TextStyle(color: Color(0xFF6CAD7C), fontSize: 15)))
+            ],
+          ));
 
   void close() {
     Navigator.of(context).pop();
@@ -502,13 +552,14 @@ class _SignUpState extends State<HomeOwner> {
         luminosity: 0,
         isHeaterOn: false,
         temperature: 16,
-        employees: <String>[],
+        employees: <String>[user.email],
         employeesInRoom: <String>[],
         heaterBoolAutomatic: true,
         lightsBoolAutomatic: true,
         targetLuminosity: 100,
         targetTemperature: 20,
         isEmpty: true,
+        inOffice: <bool>[false],
       );
 
       await FirebaseFirestore.instance
@@ -518,18 +569,12 @@ class _SignUpState extends State<HomeOwner> {
         successMessage(context, "Office created");
 
         //Atualizar offices do owner
-        List<dynamic> userOffices = user.offices;
-        userOffices.add(value.id);
-
-        List<dynamic> userInOffices = user.inOffice;
-        userInOffices.add(false);
-
-
+        user.offices.add(value.id);
 
         await FirebaseFirestore.instance
             .collection("Users")
             .doc(user.email)
-            .update({"Offices": userOffices, "InOffice": userInOffices}).then((value) {
+            .update({"Offices": user.offices}).then((value) {
           Navigator.of(context).pop();
 
           officeNameController.clear();

@@ -13,6 +13,7 @@ class OfficeDTO {
   final int targetLuminosity;
   final int targetTemperature;
   final bool isEmpty;
+  final List<dynamic> inOffice;
 
   const OfficeDTO({
     required this.owner,
@@ -29,6 +30,7 @@ class OfficeDTO {
     required this.targetLuminosity,
     required this.targetTemperature,
     required this.isEmpty,
+    required this.inOffice
   });
 
   toJson() {
@@ -47,6 +49,7 @@ class OfficeDTO {
       "target_Luminosity": targetLuminosity,
       "target_Temperature": targetTemperature,
       "IsEmpty": isEmpty,
+      "InOffice": inOffice,
     };
   }
 }

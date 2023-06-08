@@ -265,10 +265,12 @@ class _SignUpState extends State<ConfigOffice> {
                 errorMessage(context, "That user is already an employee");
               } else {
                 employees.add(email);
+                List<dynamic> inOffice = office.inOffice;
+                inOffice.add(false);
                 await FirebaseFirestore.instance
                     .collection("Offices")
                     .doc(id)
-                    .update({"Employees": employees});
+                    .update({"Employees": employees, "InOffice": inOffice});
 
                 List<dynamic> offices = doc.data()!["Offices"];
                 offices.add(id);
@@ -486,7 +488,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 230,
+        height: lightBool ? 230 :150,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFffffff),
@@ -559,7 +561,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Heater(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 230,
+        height: heaterBool ? 230 : 150,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFffffff),
@@ -896,7 +898,6 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights_OFF(String offMessage) {
     return Column(
       children: <Widget>[
-        const SizedBox(height: 35),
         Text(offMessage,
             style: const TextStyle(
                 color: Colors.red,

@@ -352,7 +352,6 @@ class _InitialConfigsUser extends State<InitialConfigsUser> {
                               name: name,
                               temperature: _temperature.round(),
                               offices: <dynamic>[],
-                              inOffice: <dynamic>[],
                           );
                           await FirebaseFirestore.instance
                               .collection("Users")
