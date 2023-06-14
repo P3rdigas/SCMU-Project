@@ -53,7 +53,7 @@ class _SignUpState extends State<ConfigOffice> {
     lightBoolAutomatic = office.lightsBoolAutomatic;
     heaterBoolAutomatic = office.heaterBoolAutomatic;
     _lightV = office.luminosity.toDouble();
-    _heaterV = office.temperature.toDouble();
+    _heaterV = office.targetTemperature.toDouble();
     _rollerV = office.blind.toDouble();
     getRecordsFromFirebase();
   }
@@ -141,54 +141,54 @@ class _SignUpState extends State<ConfigOffice> {
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
                 body: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: SingleChildScrollView(
-                      child: Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              20, MediaQuery.of(context).size.height * 0.08, 30, 0),
-                          child: Column(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                  child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          20, MediaQuery.of(context).size.height * 0.08, 30, 0),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  OwnerSetUp(user: user)));
-                                    },
-                                    child: const Icon(Icons.arrow_back_ios_new),
-                                  ),
-                                  Align(
-                                    child: Text(office.name,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: "Inter",
-                                            fontSize: 25)),
-                                  ),
-                                  Container()
-                                ],
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              OwnerSetUp(user: user)));
+                                },
+                                child: const Icon(Icons.arrow_back_ios_new),
                               ),
-                              const SizedBox(height: 40),
-                              Saving(),
-                              const SizedBox(height: 40),
-                              Lights("assets/icons/light-bulb.png",
-                                  "Light Intensity", "LIGHTS OFF"),
-                              const SizedBox(height: 40),
-                              Heater("assets/icons/air-source-heat-pump.png",
-                                  "Heater", "HEATER OFF"),
-                              const SizedBox(height: 40),
-                              Roller("assets/icons/up-and-down.png", "Roller Blind",
-                                  "HEATER OFF"),
-                              const SizedBox(height: 40),
-                              expand(),
-                              const SizedBox(height: 40),
+                              Align(
+                                child: Text(office.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Inter",
+                                        fontSize: 25)),
+                              ),
+                              Container()
                             ],
-                          ))),
-                ))));
+                          ),
+                          const SizedBox(height: 40),
+                          Saving(),
+                          const SizedBox(height: 40),
+                          Lights("assets/icons/light-bulb.png",
+                              "Light Intensity", "LIGHTS OFF"),
+                          const SizedBox(height: 40),
+                          Heater("assets/icons/air-source-heat-pump.png",
+                              "Heater", "HEATER OFF"),
+                          const SizedBox(height: 40),
+                          Roller("assets/icons/up-and-down.png", "Roller Blind",
+                              "HEATER OFF"),
+                          const SizedBox(height: 40),
+                          expand(),
+                          const SizedBox(height: 40),
+                        ],
+                      ))),
+            ))));
   }
 
   Widget expand() {
@@ -242,20 +242,20 @@ class _SignUpState extends State<ConfigOffice> {
         const SizedBox(height: 30),
         reusableTextField(
             "Email", Icons.email_outlined, false, _emailTextController,
-                (value) {
-              if (value == null || value.isEmpty) {
-                return "Please enter your email address";
-              } else if (!EmailValidator.validate(value)) {
-                return "Please enter a valid email.";
-              }
-              return null;
-            }),
+            (value) {
+          if (value == null || value.isEmpty) {
+            return "Please enter your email address";
+          } else if (!EmailValidator.validate(value)) {
+            return "Please enter a valid email.";
+          }
+          return null;
+        }),
         const SizedBox(height: 30),
         firebaseUIButton(context, "Add User", () async {
           String email = _emailTextController.text.trim();
 
           var docRef =
-          FirebaseFirestore.instance.collection("Users").doc(email);
+              FirebaseFirestore.instance.collection("Users").doc(email);
 
           docRef.get().then((doc) async {
             if (doc.exists) {
@@ -488,7 +488,7 @@ class _SignUpState extends State<ConfigOffice> {
   Widget Lights(String image, String title, String offMessage) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: lightBool ? 230 :150,
+        height: lightBool ? 230 : 150,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFffffff),
@@ -704,18 +704,18 @@ class _SignUpState extends State<ConfigOffice> {
               color: Color(0xFF6CAD7C),
               fontWeight: FontWeight.bold,
               fontFamily: "Inter",
-            )
-        ),
+            )),
         SizedBox(height: 10),
         Switch(
             value: lightBoolAutomatic,
             trackColor: trackColorGreen,
-            thumbColor: const MaterialStatePropertyAll<Color>(
-                Color(0xFF6CAD7C)),
+            thumbColor:
+                const MaterialStatePropertyAll<Color>(Color(0xFF6CAD7C)),
             onChanged: (bool value) async {
               setState(() {
-                if(!value) {
-                  calculateAverageTemperature(id, office, heaterBoolAutomatic, lightBoolAutomatic);
+                if (!value) {
+                  calculateAverageTemperature(
+                      id, office, heaterBoolAutomatic, lightBoolAutomatic);
                 }
                 lightBoolAutomatic = value;
               });
@@ -725,14 +725,13 @@ class _SignUpState extends State<ConfigOffice> {
                   .doc(id)
                   .update({"automatic_light": value});
             }),
-
         automaticLights(),
       ],
     );
   }
 
   Widget automaticLights() {
-    if(!lightBoolAutomatic) {
+    if (!lightBoolAutomatic) {
       return SliderTheme(
         data: SliderTheme.of(context).copyWith(
           activeTrackColor: const Color(0xFF6CAD7C),
@@ -762,8 +761,7 @@ class _SignUpState extends State<ConfigOffice> {
           ),
         ),
       );
-    }
-    else {
+    } else {
       return Column(
         children: [
           SizedBox(height: 15),
@@ -772,8 +770,7 @@ class _SignUpState extends State<ConfigOffice> {
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
                 fontFamily: "Inter",
-              )
-          ),
+              )),
         ],
       );
     }
@@ -788,19 +785,18 @@ class _SignUpState extends State<ConfigOffice> {
               color: Color(0xFF6CAD7C),
               fontWeight: FontWeight.bold,
               fontFamily: "Inter",
-
-            )
-        ),
+            )),
         SizedBox(height: 10),
         Switch(
             value: heaterBoolAutomatic,
             trackColor: trackColorGreen,
-            thumbColor: const MaterialStatePropertyAll<Color>(
-                Color(0xFF6CAD7C)),
+            thumbColor:
+                const MaterialStatePropertyAll<Color>(Color(0xFF6CAD7C)),
             onChanged: (bool value) async {
               setState(() {
-                if(!value) {
-                  calculateAverageTemperature(id, office, heaterBoolAutomatic, lightBoolAutomatic);
+                if (!value) {
+                  calculateAverageTemperature(
+                      id, office, heaterBoolAutomatic, lightBoolAutomatic);
                 }
                 heaterBoolAutomatic = value;
               });
@@ -816,7 +812,7 @@ class _SignUpState extends State<ConfigOffice> {
   }
 
   Widget automaticHeater() {
-    if(!heaterBoolAutomatic) {
+    if (!heaterBoolAutomatic) {
       return SliderTheme(
         data: SliderTheme.of(context).copyWith(
           activeTrackColor: const Color(0xFF6CAD7C),
@@ -830,7 +826,7 @@ class _SignUpState extends State<ConfigOffice> {
           width: MediaQuery.of(context).size.width * 0.75,
           child: Slider(
             value: _heaterV,
-            label: "${_lightV.round()}ºC",
+            label: "${_heaterV.round()}ºC",
             onChanged: (value) async {
               setState(() {
                 _heaterV = value;
@@ -846,8 +842,7 @@ class _SignUpState extends State<ConfigOffice> {
           ),
         ),
       );
-    }
-    else {
+    } else {
       return Column(
         children: [
           SizedBox(height: 15),
@@ -856,8 +851,7 @@ class _SignUpState extends State<ConfigOffice> {
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
                 fontFamily: "Inter",
-              )
-          ),
+              )),
         ],
       );
     }
@@ -903,15 +897,14 @@ class _SignUpState extends State<ConfigOffice> {
                 color: Colors.red,
                 fontWeight: FontWeight.bold,
                 fontFamily: "Inter",
-                fontSize: 20
-            ))
+                fontSize: 20))
       ],
     );
   }
 
   final MaterialStateProperty<Color?> overlayColor =
-  MaterialStateProperty.resolveWith<Color?>(
-        (Set<MaterialState> states) {
+      MaterialStateProperty.resolveWith<Color?>(
+    (Set<MaterialState> states) {
       // Material color when switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade50;
@@ -928,8 +921,8 @@ class _SignUpState extends State<ConfigOffice> {
   );
 
   final MaterialStateProperty<Color?> trackColorGreen =
-  MaterialStateProperty.resolveWith<Color?>(
-        (Set<MaterialState> states) {
+      MaterialStateProperty.resolveWith<Color?>(
+    (Set<MaterialState> states) {
       // Track color when the switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.green.shade100;
@@ -942,8 +935,8 @@ class _SignUpState extends State<ConfigOffice> {
   );
 
   final MaterialStateProperty<Color?> trackColorBlue =
-  MaterialStateProperty.resolveWith<Color?>(
-        (Set<MaterialState> states) {
+      MaterialStateProperty.resolveWith<Color?>(
+    (Set<MaterialState> states) {
       // Track color when the switch is selected.
       if (states.contains(MaterialState.selected)) {
         return Colors.blue.shade100;
